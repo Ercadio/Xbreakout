@@ -45,7 +45,6 @@ int main(int argc, char* argv[]) {
 
   XSync(dpy, screen_id);
 
-  handleEvents(display);
 
 }
 
@@ -60,6 +59,7 @@ void skipUntil(Display* display, int eventType) {
 void handleEvents(Display* display) {
   XEvent e;
   do {
+    XNextEvent(display, &e);
     switch(e.type) {
       case Expose:
         if(e.xexpose.count > 0)

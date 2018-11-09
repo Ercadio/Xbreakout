@@ -1,5 +1,6 @@
 CXX = @g++ -std=c++17
 CXXFLAGS = -Wall -MMD -O -g
+CXXLIBS = -lX11
 SOURCES = $(shell find * -type f \( -name "*.cpp" -not -name "*.test.cpp" \) )
 TEST_SOURCES = $(shell find * -type f -name "*.cpp" -not -name "main.cpp")
 EXEC=breakout
@@ -14,11 +15,11 @@ TEST_DEPENDS = ${TEST_OBJECTS:.o=.d}
 
 $(EXEC): $(DEPENDS) $(OBJECTS) $(TEST_EXEC)
 	-include ${DEPENDS}
-	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXEC)
+	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXEC) $(CXXLIBS)
 
 $(TEST_EXEC): tags $(TEST_DEPENDS) $(TEST_OBJECTS)
 	-include ${DEPENDS}
-	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_EXEC)
+	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_EXEC) $(CXXLIBS)
 	@./$(TEST_EXEC)
 
 # Create obj directory
