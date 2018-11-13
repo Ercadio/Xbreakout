@@ -1,4 +1,4 @@
-CXX = @g++ -std=c++17
+CXX = @g++ -std=c++14
 CXXFLAGS = -Wall -MMD -O -g
 CXXLIBS = -lX11
 SOURCES = $(shell find * -type f \( -name "*.cpp" -not -name "*.test.cpp" \) )
@@ -14,13 +14,19 @@ DEPENDS = ${OBJECTS:.o=.d}
 TEST_DEPENDS = ${TEST_OBJECTS:.o=.d}
 
 $(EXEC): $(DEPENDS) $(OBJECTS) $(TEST_EXEC)
-	-include ${DEPENDS}
 	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXEC) $(CXXLIBS)
 
-$(TEST_EXEC): tags $(TEST_DEPENDS) $(TEST_OBJECTS)
+ifeq ($(MAKECMDGOALS),$(EXEC))
 	-include ${DEPENDS}
+endif
+
+$(TEST_EXEC): $(TEST_DEPENDS) $(TEST_OBJECTS)
 	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_EXEC) $(CXXLIBS)
 	@./$(TEST_EXEC)
+
+ifeq ($(MAKECMDGOALS),$(TEST_EXEC))
+	-include ${DEPENDS}
+endif
 
 # Create obj directory
 $(OBJDIR):
