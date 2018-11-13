@@ -5,44 +5,18 @@
 
 namespace view {
 
-PNGImage::PNGImage(const std::string& fp) :
-imgdta(50*50*4)
-{ 
-  /*std::ifstream ifs(fp, std::ios::binary|std::ios::ate);
-  std::ifstream::pos_type pos = ifs.tellg();
-  std::vector<std::byte> result(pos);
-  ifs.seekg(0, std::ios::beg);
-  ifs.read(result.data(), pos);
-*/
-  /* if(not pnf_sig_cmp(???, 0, ???)) {
-    throw ViewException("The file " + fp + " is not a png file");
-  }
-
-  png_structp png_ptr = png_create_read_struct(
-    PNG_LIBPNG_VER_STRING, (png_voidp) user_error_ptr,
-    user_error_fn, user_warning_fn
-  );
-
-  if(not png_ptr)
-    throw ViewException("The file " + fp + " is not a png file");
+PNGImage::PNGImage(const std::string& fp) {
+  unsigned char** raw_rows;
+  std::tie(raw_rows, _height, _width) = getPNGPixels(fp);
+  _imgdta = std::vector<char>(_width * _height * 4);
   
-  png_read_row(png_ptr); */
+  std::cout << "[INFO] Image is being copied" << std::endl; 
 
-
-  // Testing
-  for(int i = 0; i < 50; ++i) {
-    for(int j = 0; j < 50; ++j) {
-      if((i/10) % 2 == (j/10)%2) {
-        imgdta[(i + 50 * j) * 4 + 0] = 0xff;
-        imgdta[(i + 50 * j) * 4 + 1] = 0xff;
-        imgdta[(i + 50 * j) * 4 + 2] = 0xff;
-      } else {
-        imgdta[(i + 50 * j) * 4 + 0] = 0xff;
-        imgdta[(i + 50 * j) * 4 + 1] = 0x0;
-        imgdta[(i + 50 * j) * 4 + 2] = 0xff;
-      }
-    }
+  for(unsigned int i = 0; i < _height; ++i) {
+    _imgdta.insert(_imgdta.begin(), raw_rows[i], raw_rows[i] + _width * 4);
   }
+ 
+  std::cout << "[INFO] Image was constructed" << std::endl; 
 
 }
 
@@ -52,12 +26,12 @@ void PNGImage::display(Display* display, Window window, GC& gc) {
   XImage* ximg= XCreateImage(
     display, XDefaultVisual(display, 0),
     24, ZPixmap, 0,
-    imgdta.data(), 50, 50,
+    _imgdta.data(), _width, _height,
     32, 0
   );
   std::cout << "[INFO] Created image" << std::endl;
   XPutImage(display, window, gc, ximg, 0, 0,
-    0, 0, 50, 50);
+    0, 0, _width, _height);
   std::cout << "[INFO] Displayed image" << std::endl;
   
 }

@@ -2,13 +2,16 @@
 #include <cstddef>
 #include <string>
 #include <vector>
+#include <tuple>
 #include <X11/Xlib.h>
 
 namespace view {
 
 class PNGImage {
 
-std::vector<char> imgdta;
+std::vector<char> _imgdta;
+std::size_t _width;
+std::size_t _height;
 
 public:
 
@@ -27,4 +30,13 @@ public:
 
 };
 
+/**
+ * Generates raw pixel data given a png file path
+ * @paramfp the filepath
+ * @relates PNGImage
+ * @returns (row_data, height, width) where row_data is a list of pointers to the rows of the image 
+ */
+std::tuple<unsigned char**, int, int> getPNGPixels(const std::string& fn);
+
 } // namespace
+
