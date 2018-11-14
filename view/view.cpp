@@ -51,6 +51,9 @@ std::tuple<unsigned char**, int, int> getPNGPixels(const std::string& fn) {
   std::cout << "[INFO] Width of " << width << std::endl;
   std::cout << "[INFO] Height of " << height << std::endl;
   std::cout << "[INFO] Depth of " << static_cast<int>(bit_depth) << std::endl;
+
+  if (color_type == PNG_COLOR_TYPE_RGB or color_type == PNG_COLOR_TYPE_RGB_ALPHA)
+    png_set_bgr(png_ptr);
   
   // Creating raw data
   png_bytep* row_pointers = new png_bytep[height];
