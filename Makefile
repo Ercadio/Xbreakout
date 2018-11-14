@@ -1,6 +1,6 @@
 CXX = @g++ -std=c++17
 CXXFLAGS = -Wall -MMD -O -g
-CXXLIBS = -lX11 -lpng
+CXXLIBS = -lX11 -lpng -lXrender
 SOURCES = $(shell find * -type f \( -name "*.cpp" -not -name "*.test.cpp" \) )
 TEST_SOURCES = $(shell find * -type f -name "*.cpp" -not -name "main.cpp")
 EXEC=breakout
@@ -15,8 +15,12 @@ TEST_DEPENDS = ${TEST_OBJECTS:.o=.d}
 
 $(EXEC): $(DEPENDS) $(OBJECTS) $(TEST_EXEC)
 	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXEC) $(CXXLIBS)
+	@./$(EXEC)
 
 ifeq ($(MAKECMDGOALS),$(EXEC))
+	-include ${DEPENDS}
+endif
+ifeq ($(MAKECMDGOALS),"")
 	-include ${DEPENDS}
 endif
 
@@ -55,4 +59,8 @@ tags:
 .PHONY: doc
 doc:
 	@doxygen
+
+.PHONY: assets
+assets:
+	@python3.6 convert.py
 

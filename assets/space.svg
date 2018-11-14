@@ -1,8 +1,9 @@
-<svg width="300" height="200">
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200">
   <style>
     .text {
       font-size: 50px;
       font-family: 'Inter UI', 'Arial';
+      fill: white;
     }
   </style>
   <path d="

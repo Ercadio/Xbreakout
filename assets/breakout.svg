@@ -1,7 +1,6 @@
-<svg width="1110" height="200" >
+<svg xmlns="http://www.w3.org/2000/svg" width="1110" height="200" >
   <defs>
     <style type="text/css">
-      <![CDATA[
        .upview {
          fill: url(#upview);
          stroke: yellow;
@@ -14,7 +13,6 @@
         fill: url(#letter);
         stroke: #972D07;
        }
-    ]]>
     </style>
     <linearGradient id="upview" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" style="
@@ -106,9 +104,7 @@
     l 60 0
     l 0 20
     l -80 0
-    l 0 -150
-  " class="letter" />
-
+    l 0 -150" class="letter" />
 <!-- Letter A -->
 <path d="
     M 390 25
@@ -184,3 +180,4 @@
           l -40 0
           l 0 -20
           " class="letter" />
+</svg>
