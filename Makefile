@@ -1,6 +1,6 @@
-CXX = @g++ -std=c++14
+CXX = @g++ -std=c++17
 CXXFLAGS = -Wall -MMD -O -g
-CXXLIBS = -lX11
+CXXLIBS = -lX11 -lpng
 SOURCES = $(shell find * -type f \( -name "*.cpp" -not -name "*.test.cpp" \) )
 TEST_SOURCES = $(shell find * -type f -name "*.cpp" -not -name "main.cpp")
 EXEC=breakout
@@ -25,7 +25,7 @@ $(TEST_EXEC): $(TEST_DEPENDS) $(TEST_OBJECTS)
 	@./$(TEST_EXEC)
 
 ifeq ($(MAKECMDGOALS),$(TEST_EXEC))
-	-include ${DEPENDS}
+-include ${DEPENDS}
 endif
 
 # Create obj directory
