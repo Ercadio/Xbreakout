@@ -21,7 +21,7 @@ PNGImage::PNGImage(const std::string& fp) {
 }
 
 
-void PNGImage::display(Display* display, Window window, GC& gc) {
+void PNGImage::display(Display* display, MainWindow* window, GC& gc) {
   std::cout << "[INFO] Displaying image" << std::endl;
   XImage* ximg= XCreateImage(
     display, XDefaultVisual(display, 0),
@@ -30,7 +30,7 @@ void PNGImage::display(Display* display, Window window, GC& gc) {
     32, 0
   );
   std::cout << "[INFO] Created image" << std::endl;
-  XPutImage(display, window, gc, ximg, 0, 0,
+  XPutImage(display, window->_wind, gc, ximg, 0, 0,
     0, 0, _width, _height);
   std::cout << "[INFO] Displayed image" << std::endl;
   

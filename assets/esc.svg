@@ -1,0 +1,21 @@
+<svg width="200" height="200">
+  <style>
+    .text {
+      font-size: 50px;
+      font-family: 'Inter UI', 'Arial';
+    }
+  </style>
+  <path d="
+    M 20 0
+    l 160 0
+    a 20 20 0 0 1 20 20
+    l 0 160
+    a 20 20 0 0 1 -20 20
+    l -160 0
+    a 20 20 0 0 1 -20 -20
+    l 0 -160
+    a 20 20 0 0 1 20 -20
+    "
+    stroke="black" stroke-width="11" fill="none" />
+  <text x="50" y="115" class="text" >ESC</text>
+</svg>

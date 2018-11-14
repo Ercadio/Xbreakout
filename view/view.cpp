@@ -64,7 +64,7 @@ std::tuple<unsigned char**, int, int> getPNGPixels(const std::string& fn) {
   png_read_image(png_ptr, row_pointers);
   fclose(fp);
 
-  return { static_cast<unsigned char**>(row_pointers), height, width };
+  return std::make_tuple(static_cast<unsigned char**>(row_pointers), height, width);
 }
 
 }

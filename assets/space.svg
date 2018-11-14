@@ -1,0 +1,21 @@
+<svg width="300" height="200">
+  <style>
+    .text {
+      font-size: 50px;
+      font-family: 'Inter UI', 'Arial';
+    }
+  </style>
+  <path d="
+    M 20 0
+    l 260 0
+    a 20 20 0 0 1 20 20
+    l 0 160
+    a 20 20 0 0 1 -20 20
+    l -260 0
+    a 20 20 0 0 1 -20 -20
+    l 0 -160
+    a 20 20 0 0 1 20 -20
+    "
+    stroke="black" stroke-width="11" fill="none" />
+  <text x="70" y="115" class="text" >SPACE</text>
+</svg>
