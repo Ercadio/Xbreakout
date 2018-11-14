@@ -29,23 +29,20 @@ _hint(new XSizeHints{
     std::cerr << "[FATAL] Unable to open display" << std::endl;
     throw DisplayException("Unable to open display");
   }
+  int event, error;
+  if (XRenderQueryExtension(_display, &event, &error)) {
+    std::cout << "[INFO] XRender is supported for display" << std::endl;
+  } else {
+    std::cerr << "[WARNING] XRender is not supported by display... Moving on" << std::endl;
+  }
   XSetNormalHints(_display, _wind, _hint);
   set_title(name);
 }
 
 
 void MainWindow::set_title(const std::string& name) {
-
   XStoreName(_display, _wind, name.c_str());
-/*  XTextProperty title;
-  char** text = new char*[1];
-  *text = name.c_str();
-  XmbTextListToTextProperty(
-    _display, text, 1, 
-    XStringStyle, &title
-  );
-  XSetWMName(_display, _wind, &title);
-*/}
+}
 
 void MainWindow::map() {
   std::cout << "[INFO] Mapped window " << _screen_id << std::endl;

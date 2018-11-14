@@ -1,9 +1,13 @@
 #pragma once
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/extensions/Xrender.h>
 #include "ColorManager.hpp"
 #include <string>
 #include <iostream>
+
+namespace view { class PNGImage; }
+
 
 namespace breakout {
 
@@ -42,7 +46,20 @@ public:
   void map();
 
   friend class EventManager;
+  friend class view::PNGImage;
 
+  /**
+    Returns the window's drawable
+  */ 
+  long unsigned int drawable() const { return _wind; }
+
+  /**
+    Returns the window's id
+  */
+  long unsigned int id() const { return _screen_id; }
+
+  int width() const { return DisplayWidth(_display, _screen_id)/2; }
+  int height() const { return DisplayHeight(_display, _screen_id)/2; }
 };
 
 
