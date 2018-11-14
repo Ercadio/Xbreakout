@@ -23,7 +23,8 @@ void EventManager::skipUntil(long mask) {
   do {
     XNextEvent(_display, &e);
     std::cout << "[INFO] Skipped event " << e.type << std::endl;
-  } while(not (e.type | mask));
+  } while(not (e.type == mask));
+  std::cout << "[INFO] Received event " << e.type << " so we stop skipping" << std::endl;
 }
 
 void EventManager::handleNext() {
