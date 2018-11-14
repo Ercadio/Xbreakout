@@ -1,4 +1,4 @@
-CXX = @g++ --std=c++17
+CXX = @g++ -std=c++17
 CXXFLAGS = -Wall -MMD -O -g
 CXXLIBS = -lX11 -lpng
 SOURCES = $(shell find * -type f \( -name "*.cpp" -not -name "*.test.cpp" \) )
@@ -16,15 +16,15 @@ TEST_DEPENDS = ${TEST_OBJECTS:.o=.d}
 $(EXEC): $(DEPENDS) $(OBJECTS) $(TEST_EXEC)
 	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXEC) $(CXXLIBS)
 
-ifeq ($(MAKECMDGOALS), $(EXEC))
--include ${DEPENDS}
+ifeq ($(MAKECMDGOALS),$(EXEC))
+	-include ${DEPENDS}
 endif
 
-$(TEST_EXEC): tags $(TEST_DEPENDS) $(TEST_OBJECTS)
+$(TEST_EXEC): $(TEST_DEPENDS) $(TEST_OBJECTS)
 	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_EXEC) $(CXXLIBS)
 	@./$(TEST_EXEC)
 
-ifeq ($(MAKECMDGOALS), $(TEST_EXEC))
+ifeq ($(MAKECMDGOALS),$(TEST_EXEC))
 -include ${DEPENDS}
 endif
 

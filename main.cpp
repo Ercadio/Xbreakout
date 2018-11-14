@@ -1,7 +1,8 @@
-#include <X11/Xlib.h>
+#include "breakout.hpp"
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include "view/view.hpp"
 
 using namespace std::chrono_literals;
 
@@ -10,63 +11,67 @@ void skipUntil(Display* display, int eventType);
 
 int main(int argc, char* argv[]) {
 
-  Display* dpy = XOpenDisplay(nullptr);
-  if(dpy == nullptr) {
-    std::cout << "[FATAL] Unable to open display\n";
-    std::exit(1);
-  }
+  // Default DISPLAY to localhost
+  // This does not overwrite the env var
+  setenv("DISPLAY", ":0", 0);
 
-  int screen_id = DefaultScreen(dpy);
-  int blackColor = BlackPixel(dpy, screen_id);
-  int whiteColor = WhitePixel(dpy, screen_id);
-  int win_w = DisplayWidth(dpy, screen_id) / 2;
-  int win_h = DisplayHeight(dpy, screen_id);
+  std::cout << "[INFO] Using X Server at " << std::getenv("DISPLAY") << std::endl;
 
-  Window window = XCreateSimpleWindow(dpy, DefaultRootWindow(dpy), 0, 0, win_w, win_h,
-   0, blackColor, blackColor);
+  /*
+  XSetForeground(dpy, gc, whiteColor);
+  XSetFillStyle(dpy, gc, FillSolid);
+  
+  std::cout << "[INFO] Skipping until MapNotify" << std::endl;
+  skipUntil(dpy, MapNotify);
 
-  //XSelectInput(dpy, window, StructureNotifyMask);
-  XMapWindow(dpy, window);
+  std::cout << "[INFO] Drawing line" << std::endl;
+  XDrawLine(dpy, window, gc, 0, 0, 100, 100); 
+  
+  XSync(dpy, screen_id);
+  */
+  Display* display = XOpenDisplay(nullptr);
+  breakout::MainWindow* window = new breakout::MainWindow(display);
+  breakout::EventManager* eventManager = new breakout::EventManager(display, [](const XEvent& event){
+    switch(event.type) {
+      case Expose:
+        break;
+      case DestroyNotify:
+      case ClientMessage:
+        std::cout << "[INFO] Quitting the application" << std::endl;
+        breakout::game.exit();
+        break;
+      default:
+        std::cerr << "[WARNING] Encountered unknown event" << std::endl;
+        break;
+    }
+  });
+  eventManager->registerDefaults(window);
+  view::PNGImage img("test.png");
+
+
   XGCValues values;
   values.cap_style = CapButt;
   values.join_style = JoinBevel;
-  GC gc = XCreateGC(dpy, window, GCCapStyle | GCJoinStyle, &values);
+  GC gc = XCreateGC(display, window, GCCapStyle | GCJoinStyle, &values);
   if(gc < 0) {
     std::cout << "[FATAL] Unable to create Graphical context\n";
     std::exit(1);
   }
 
-  XSetForeground(dpy, gc, whiteColor);
-  XSetFillStyle(dpy, gc, FillSolid);
-  
-  skipUntil(dpy, MapNotify);
+  window->map();
+  eventManager->skipUntil(MapNotify);
+  img.display(dpy, window, gc);
+  while(breakout::game.is_running()) {
+    std::cout << "[INFO] Game has started" << std::endl;
+    
+    eventManager->handleNext();
+    std::this_thread::sleep_for(1000ms / 60);
+  }
 
-  XDrawLine(dpy, window, gc, 20, 20, 100, 100); 
-
-  XSync(dpy, screen_id);
-
+  delete window;
+  delete eventManager;
+  XCloseDisplay(display);
 
 }
 
-void skipUntil(Display* display, int eventType) {
-  XEvent e;
-  do {
-    XNextEvent(display, &e);
-    std::cout << "[INFO] Received event " << e.type << std::endl;
-  } while(e.type != eventType);
-}
 
-void handleEvents(Display* display) {
-  XEvent e;
-  do {
-    XNextEvent(display, &e);
-    switch(e.type) {
-      case Expose:
-        if(e.xexpose.count > 0)
-          break;
-        break;
-      default:
-        break;
-    }
-  } while(e.type != 0);
-}
