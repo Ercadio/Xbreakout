@@ -2,6 +2,7 @@
 #include <fstream>
 #include <png.h>
 #include <iostream>
+#include "../MainWindow.hpp"
 
 namespace view {
 
@@ -12,7 +13,7 @@ PNGImage::PNGImage(const std::string& fp) {
   
   std::cout << "[INFO] Image is being copied" << std::endl; 
 
-  for(unsigned int i = 0; i < _height; ++i) {
+  for(int i = _height - 1; i >= 0; --i) {
     _imgdta.insert(_imgdta.begin(), raw_rows[i], raw_rows[i] + _width * 4);
   }
  
@@ -21,8 +22,7 @@ PNGImage::PNGImage(const std::string& fp) {
 }
 
 
-void PNGImage::display(Display* display, MainWindow* window, GC& gc) {
-  std::cout << "[INFO] Displaying image" << std::endl;
+void PNGImage::display(Display* display, breakout::MainWindow* window, GC& gc, int x, int y) {
   XImage* ximg= XCreateImage(
     display, XDefaultVisual(display, 0),
     24, ZPixmap, 0,
@@ -31,8 +31,8 @@ void PNGImage::display(Display* display, MainWindow* window, GC& gc) {
   );
   std::cout << "[INFO] Created image" << std::endl;
   XPutImage(display, window->_wind, gc, ximg, 0, 0,
-    0, 0, _width, _height);
-  std::cout << "[INFO] Displayed image" << std::endl;
+    x - _width/2, y - _height/2,  _width, _height);
+  std::cout << "[INFO] Displayed image to " << window->drawable() << std::endl;
   
 }
 

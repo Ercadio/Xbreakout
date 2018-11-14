@@ -5,6 +5,8 @@
 #include <tuple>
 #include <X11/Xlib.h>
 
+namespace breakout { class MainWindow; }
+
 namespace view {
 
 class PNGImage {
@@ -24,9 +26,12 @@ public:
   /**
    * Displays the image
    * @param display the X11 connection
-   * @param screen_id the target screen
+   * @param window the target window
+   * @param gc the graphical context
+   * @param x the x coordinate
+   * @param y the y coordinate
    */
-  void display(Display* display, Window window, GC& gc);
+  void display(Display* display, breakout::MainWindow* window, GC& gc, int x, int y);
 
 };
 

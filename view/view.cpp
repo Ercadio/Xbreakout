@@ -11,7 +11,7 @@ namespace view {
 std::tuple<unsigned char**, int, int> getPNGPixels(const std::string& fn) {
   FILE* fp = fopen(fn.c_str(), "rb");
   if(not fp) {
-    std::cerr << "[ERROR] " << fn << "is not a file" << std::endl;
+    std::cerr << "[ERROR] " << fn << " is not a file" << std::endl;
     throw ImageException(fn + " is not a file");
   }
   png_byte signature[8];
