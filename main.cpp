@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
   });
   eventManager->registerDefaults(window);
   view::PNGImage img("assets/breakout.png");
-
+  view::PNGImage esc("assets/esc.png");
 
   XGCValues values;
   values.cap_style = CapButt;
@@ -48,7 +48,8 @@ int main(int argc, char* argv[]) {
 
   window->map();
   eventManager->skipUntil(MapNotify);
-  img.display(display, window, gc, window->width() / 2, window->height() /3);
+  img.display(display, window, gc, window->width() / 2, window->height() / 3);
+  esc.display(display, window, gc, window->width() / 2, window->height() * 0.6f);
   XSync(display, window->id());
 
   std::cout << "[INFO] Game has started" << std::endl;
