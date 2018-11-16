@@ -47,14 +47,19 @@ int main(int argc, char* argv[]) {
   }
 
   window->map();
+  XSync(display, window->id());
   eventManager->skipUntil(MapNotify);
   img.display(display, window, gc, window->width() / 2, window->height() /3);
   XSync(display, window->id());
 
   std::cout << "[INFO] Game has started" << std::endl;
-  while(breakout::game.is_running()) {    
+  double fps = 0;
+  while(breakout::game.is_running()) {
+    auto now = std::system_clock::now();
     eventManager->handleNext();
     std::this_thread::sleep_for(1000ms / 60);
+    auto delta = std::system_clock::now() - now;
+    fps = fps + ALPHA * (delta - fps);
   }
 
   delete window;
@@ -62,5 +67,3 @@ int main(int argc, char* argv[]) {
   XCloseDisplay(display);
 
 }
-
-
