@@ -4,6 +4,8 @@
 #include <pulse/simple.h>
 #include <pulse/error.h>
 
+namespace audio {
+
 WAVFile::~WAVFile() {
   delete[] data;
 }
@@ -45,40 +47,4 @@ std::ostream& operator<<(std::ostream& os, WAVFile& wav) {
   return os;
 }
 
-
-int main() {
-  std::ifstream fs ("Mainframe.wav", std::ios::in | std::ios::binary);
-  if(not fs.is_open()) {
-    std::cout << "Cannot read file\n";
-  }
-  WAVFile wav{ 0 };
-  fs >> wav;
-  std::cout << wav;
- 
-  static const pa_sample_spec ss = {
-    .format = PA_SAMPLE_S24LE, .rate = 44100, .channels = 2
-  };
-  pa_simple* s;
-  int ret = 1;
-  int error;
-  if (not (s = pa_simple_new(nullptr, "music", PA_STREAM_PLAYBACK, nullptr, "playback",
-        &ss, nullptr, nullptr, &error))) {
-    std::cerr << "[FATAL] Could not create connection" << std::endl;
-    std::exit(1);
-  }
-
-  for(char* it = wav.data; it < wav.data + wav.Subchunk2Size; it += 768) {
-    if(pa_simple_write(s, it, 768, &error) < 0) {
-      std::cerr << "[FATAL] Could not write data to server: " << pa_strerror(error) << std::endl;
-      std::exit(1);
-    }
-  }
-
-  if(pa_simple_drain(s, &error) < 0) {
-    std::cout << "[ERROR] Was not able to drain" << std::endl;
-  }
-
-  if(s)
-    pa_simple_free(s);
-
-}
+} // namespace

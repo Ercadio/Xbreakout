@@ -1,5 +1,7 @@
 #include <iostream>
 
+namespace audio {
+
 struct WAVFile {
   char ChunkID[4];
   uint32_t ChunkSize;
@@ -20,3 +22,5 @@ struct WAVFile {
 };
   std::istream& operator>>(std::istream& is, WAVFile& wav);
   std::ostream& operator<<(std::ostream& os, WAVFile& wav);
+
+} // namespace
