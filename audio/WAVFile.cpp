@@ -1,7 +1,12 @@
 #include "WAVFile.hpp"
 #include <iostream>
 #include <fstream>
-#include <cstring>
+#include <pulse/simple.h>
+#include <pulse/error.h>
+
+WAVFile::~WAVFile() {
+  delete[] data;
+}
 
 std::istream& operator>>(std::istream& is, WAVFile& wav) {
   is.read(reinterpret_cast<char*>(&wav.ChunkID), sizeof(wav.ChunkID));
@@ -17,16 +22,26 @@ std::istream& operator>>(std::istream& is, WAVFile& wav) {
   is.read(reinterpret_cast<char*>(&wav.BitsPerSample), sizeof(wav.BitsPerSample));
   is.read(reinterpret_cast<char*>(&wav.Subchunk2ID), sizeof(wav.Subchunk2ID));
   is.read(reinterpret_cast<char*>(&wav.Subchunk2Size), sizeof(wav.Subchunk2Size));
+  wav.data = new char[wav.Subchunk2Size];
+  is.read(wav.data, wav.Subchunk2Size);
   return is;
 }
 
 std::ostream& operator<<(std::ostream& os, WAVFile& wav) {
   os << 
-    "ChunkID: \t" << wav.ChunkID << std::endl <<
+    "ChunkID: \t" << wav.ChunkID[0] << wav.ChunkID[1] << wav.ChunkID[2] << wav.ChunkID[3] << std::endl <<
     "ChunkSize: \t" << wav.ChunkSize << std::endl <<
     "Format: \t" << wav.Format[0] << wav.Format[1] << wav.Format[2] << wav.Format[3] << std::endl <<
-    "Subchunk1ID: \t" << wav.Subchunk1ID << std::endl <<
-    "Subchunk1Size \t" << wav.
+    "Subchunk1ID: \t" << wav.Subchunk1ID[0] << wav.Subchunk1ID[1] << wav.Subchunk1ID[2] << wav.Subchunk1ID[3] << std::endl <<
+    "Subchunk1Size: \t" << wav.Subchunk1Size << std::endl <<
+    "AudioFormat: \t" << wav.AudioFormat << std::endl <<
+    "NumChannels: \t" << wav.NumChannels << std::endl <<
+    "SampleRate: \t" << wav.SampleRate << std::endl <<
+    "ByteRate: \t" << wav.ByteRate << std::endl <<
+    "BlockAlign: \t" << wav.BlockAlign << std::endl <<
+    "BitsPerSample: \t" << wav.BitsPerSample << std::endl <<
+    "Subchunk2ID: \t" << wav.Subchunk2ID[0] << wav.Subchunk2ID[1] << wav.Subchunk2ID[2] << wav.Subchunk2ID[3] << std::endl <<
+    "Subchunk2Size: \t" << wav.Subchunk2Size << std::endl;
   return os;
 }
 
@@ -39,4 +54,31 @@ int main() {
   WAVFile wav{ 0 };
   fs >> wav;
   std::cout << wav;
+ 
+  static const pa_sample_spec ss = {
+    .format = PA_SAMPLE_S24LE, .rate = 44100, .channels = 2
+  };
+  pa_simple* s;
+  int ret = 1;
+  int error;
+  if (not (s = pa_simple_new(nullptr, "music", PA_STREAM_PLAYBACK, nullptr, "playback",
+        &ss, nullptr, nullptr, &error))) {
+    std::cerr << "[FATAL] Could not create connection" << std::endl;
+    std::exit(1);
+  }
+
+  for(char* it = wav.data; it < wav.data + wav.Subchunk2Size; it += 768) {
+    if(pa_simple_write(s, it, 768, &error) < 0) {
+      std::cerr << "[FATAL] Could not write data to server: " << pa_strerror(error) << std::endl;
+      std::exit(1);
+    }
+  }
+
+  if(pa_simple_drain(s, &error) < 0) {
+    std::cout << "[ERROR] Was not able to drain" << std::endl;
+  }
+
+  if(s)
+    pa_simple_free(s);
+
 }
