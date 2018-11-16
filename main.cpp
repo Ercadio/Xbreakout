@@ -22,6 +22,19 @@ int main(int argc, char* argv[]) {
   breakout::EventManager* eventManager = new breakout::EventManager(display, [](const XEvent& event){
     switch(event.type) {
       case Expose:
+        std::cout << "[INFO] Received Expose event" << std::endl;
+        break;
+      case KeyPress:
+        std::cout << "[INFO] Pressed key " << event.xkey.state << " aka " << event.xkey.keycode << std::endl;
+        if(event.xkey.keycode == 65)
+          breakout::game.use_power();
+        if(event.xkey.keycode == 9) {
+          std::cout << "[INFO] Quitting the application" << std::endl;
+          breakout::game.exit();
+        }
+        break;
+      case MotionNotify:
+        std::cout << "[INFO] Moved cursor" << std::endl;
         break;
       case DestroyNotify:
       case ClientMessage:
@@ -55,6 +68,7 @@ int main(int argc, char* argv[]) {
   std::cout << "[INFO] Game has started" << std::endl;
   while(breakout::game.is_running()) {    
     eventManager->handleNext();
+    breakout::game.display();
     std::this_thread::sleep_for(1000ms / 60);
   }
 
