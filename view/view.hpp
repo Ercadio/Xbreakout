@@ -1,4 +1,6 @@
 #include "PNGImage.hpp"
+#include "Button.hpp"
+
 
 /**
  * @namespace view

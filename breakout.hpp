@@ -3,7 +3,7 @@
 #include "ColorManager.hpp"
 #include "EventManager.hpp"
 #include "MainWindow.hpp"
-
+#include "view/view.hpp"
 /**
   @namespace breakout
   The breakout game
@@ -22,9 +22,15 @@ struct DisplayException : public std::exception {
 
 class GameState {
   bool _is_running = true;
+  int _pad_pos;
+  int _x_ball, _y_ball;
+  std::map<std::tuple<int, int>, Brick> _bricks;
 public:
+  GameState();
   void exit();
   bool is_running() const;
+  void use_power();
+  void display();
 };
 
 extern GameState game;

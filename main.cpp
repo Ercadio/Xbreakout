@@ -22,6 +22,19 @@ int main(int argc, char* argv[]) {
   breakout::EventManager* eventManager = new breakout::EventManager(display, [](const XEvent& event){
     switch(event.type) {
       case Expose:
+        std::cout << "[INFO] Received Expose event" << std::endl;
+        break;
+      case KeyPress:
+        std::cout << "[INFO] Pressed key " << event.xkey.state << " aka " << event.xkey.keycode << std::endl;
+        if(event.xkey.keycode == 65)
+          breakout::game.use_power();
+        if(event.xkey.keycode == 9) {
+          std::cout << "[INFO] Quitting the application" << std::endl;
+          breakout::game.exit();
+        }
+        break;
+      case MotionNotify:
+        std::cout << "[INFO] Moved cursor" << std::endl;
         break;
       case DestroyNotify:
       case ClientMessage:
@@ -35,7 +48,7 @@ int main(int argc, char* argv[]) {
   });
   eventManager->registerDefaults(window);
   view::PNGImage img("assets/breakout.png");
-
+  view::PNGImage esc("assets/esc.png");
 
   XGCValues values;
   values.cap_style = CapButt;
@@ -49,7 +62,8 @@ int main(int argc, char* argv[]) {
   window->map();
   XSync(display, window->id());
   eventManager->skipUntil(MapNotify);
-  img.display(display, window, gc, window->width() / 2, window->height() /3);
+  img.display(display, window, gc, window->width() / 2, window->height() / 3);
+  esc.display(display, window, gc, window->width() / 2, window->height() * 0.6f);
   XSync(display, window->id());
 
   std::cout << "[INFO] Game has started" << std::endl;
@@ -57,6 +71,7 @@ int main(int argc, char* argv[]) {
   while(breakout::game.is_running()) {
     auto now = std::system_clock::now();
     eventManager->handleNext();
+    breakout::game.display();
     std::this_thread::sleep_for(1000ms / 60);
     auto delta = std::system_clock::now() - now;
     fps = fps + ALPHA * (delta - fps);

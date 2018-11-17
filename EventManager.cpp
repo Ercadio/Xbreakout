@@ -14,7 +14,7 @@ void EventManager::registerEvents(MainWindow* window, long mask) {
 void EventManager::registerDefaults(MainWindow* window) {
   Atom WM_DELETE_WINDOW = XInternAtom(_display, "WM_DELETE_WINDOW", false);
   XSetWMProtocols(_display, window->_wind, &WM_DELETE_WINDOW, 1);
-  registerEvents(window, StructureNotifyMask);
+  registerEvents(window, StructureNotifyMask | KeyPressMask | PointerMotionMask);
 }
 
 void EventManager::skipUntil(long mask) {
