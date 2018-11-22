@@ -1,5 +1,7 @@
 #pragma once
 #include <exception>
+#include <map>
+
 #include "ColorManager.hpp"
 #include "EventManager.hpp"
 #include "MainWindow.hpp"
