@@ -4,6 +4,8 @@
 #include <chrono>
 #include "view/view.hpp"
 
+#define ALPHA 0.2f
+
 using namespace std::chrono_literals;
 
 void skipUntil(Display* display, int eventType);
@@ -69,11 +71,11 @@ int main(int argc, char* argv[]) {
   std::cout << "[INFO] Game has started" << std::endl;
   double fps = 0;
   while(breakout::game.is_running()) {
-    auto now = std::system_clock::now();
+    auto now = std::chrono::system_clock::now();
     eventManager->handleNext();
     breakout::game.display();
     std::this_thread::sleep_for(1000ms / 60);
-    auto delta = std::system_clock::now() - now;
+    auto delta = std::chrono::system_clock::now() - now;
     fps = fps + ALPHA * (delta - fps);
   }
 

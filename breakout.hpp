@@ -1,5 +1,7 @@
 #pragma once
 #include <exception>
+#include <map>
+
 #include "ColorManager.hpp"
 #include "EventManager.hpp"
 #include "MainWindow.hpp"
@@ -20,16 +22,27 @@ struct DisplayException : public std::exception {
   }
 };
 
+enum PowerType { NONE, DOUBLEBALLS, LONGERPAD };
+
+struct Brick {
+  enum BrickType { NONE, DOUBLEBALLS, LONGERPAD, BOMB };
+  std::tuple<int, int> pos;
+  BrickType type;
+  int color; // 256 per channel RGB color
+};
+
 class GameState {
   bool _is_running = true;
-  int _pad_pos;
-  int _x_ball, _y_ball;
+  double _pad_pos;
+  double _x_ball, _y_ball;
+  double _vx_ball, _vy_ball;
   std::map<std::tuple<int, int>, Brick> _bricks;
 public:
   GameState();
   void exit();
   bool is_running() const;
   void use_power();
+  void next_step();
   void display();
 };
 
