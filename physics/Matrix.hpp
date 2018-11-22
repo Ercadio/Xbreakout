@@ -5,6 +5,12 @@
 /**
  *  @class Matrix
  *  A Matrix utility class
+ *  @todo Actually store data
+ *  @todo Implement operator[] accessor
+ *  @todo Implement + * operators for scalars
+ *  @todo Implement + * operators between matrices
+ *  @todo Implement .sum()
+ *  @todo Implement .dot(const Matrix&) const
  */
 
 /**

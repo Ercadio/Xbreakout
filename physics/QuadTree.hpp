@@ -1,7 +1,14 @@
 #pragma once
 #include "Geometry.hpp"
+#include <ostream>
 
-template <class T>
+/**
+ *  @struct QuadTree
+ *  A QuadTree data structure
+ *  @todo Implement insert
+ *  @todo implement contains
+ *  @todo implement operator<<
+ */
 struct QuadTree {
 
   QuadTree* topLeft = nullptr;
@@ -10,8 +17,11 @@ struct QuadTree {
   QuadTree* botRight = nullptr;
   Geometry* node = nullptr;
   Geometry bound;
-  QuadTree(Vector bound_TL, Vector bound_TR);
+  QuadTree(Geometry boundary);
   void insert(Geometry* node);
-  bool in(Geometry* node);
+  bool contains(Geometry* node);
 
 };
+
+std::ostream& operator<<(std::ostream& os, const QuadTree& g);
+

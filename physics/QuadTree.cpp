@@ -20,5 +20,5 @@ void QuadTree::insert(Geometry* geo) {
 }
 
 bool QuadTree::contains(Geometry* node) {
-  return boundary.contains(*node->pos);
+  return bound.contains(node->pos);
 }
