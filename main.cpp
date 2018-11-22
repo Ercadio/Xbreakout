@@ -4,6 +4,8 @@
 #include <chrono>
 #include "view/view.hpp"
 
+#define ALPHA 0.2f
+
 using namespace std::chrono_literals;
 
 void skipUntil(Display* display, int eventType);
@@ -60,16 +62,21 @@ int main(int argc, char* argv[]) {
   }
 
   window->map();
+  XSync(display, window->id());
   eventManager->skipUntil(MapNotify);
   img.display(display, window, gc, window->width() / 2, window->height() / 3);
   esc.display(display, window, gc, window->width() / 2, window->height() * 0.6f);
   XSync(display, window->id());
 
   std::cout << "[INFO] Game has started" << std::endl;
-  while(breakout::game.is_running()) {    
+  double fps = 0;
+  while(breakout::game.is_running()) {
+    auto now = std::chrono::system_clock::now();
     eventManager->handleNext();
     breakout::game.display();
     std::this_thread::sleep_for(1000ms / 60);
+    auto delta = std::chrono::system_clock::now() - now;
+    fps = fps + ALPHA * (delta - fps);
   }
 
   delete window;
@@ -77,5 +84,3 @@ int main(int argc, char* argv[]) {
   XCloseDisplay(display);
 
 }
-
-
