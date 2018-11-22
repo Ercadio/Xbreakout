@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
     breakout::game.display();
     std::this_thread::sleep_for(1000ms / 60);
     auto delta = std::chrono::system_clock::now() - now;
-    fps = fps + ALPHA * (delta - fps);
+    fps = fps + ALPHA * (delta.count() - fps);
   }
 
   delete window;
