@@ -4,7 +4,7 @@ CXXLIBS = -lX11 -lpng -lXrender
 SOURCES = $(shell find * -type f \( -name "*.cpp" -not -name "*.test.cpp" \) )
 TEST_SOURCES = $(shell find * -type f -name "*.cpp" -not -name "main.cpp")
 EXEC=breakout
-TEST_EXEC=test
+TEST_EXEC=breakout_test
 
 # All of our object & dependency files are in OBJDIR
 OBJDIR=build
