@@ -7,7 +7,6 @@
  *  A union used for collision control
  *  @todo Implement contains
  *  @todo Implement intersect
- *  @todo Implement operator<<
  */
 struct Geometry {
   enum Type {

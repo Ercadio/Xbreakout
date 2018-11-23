@@ -6,6 +6,8 @@
 #include "EventManager.hpp"
 #include "MainWindow.hpp"
 #include "view/view.hpp"
+#include "physics/physics.hpp"
+
 /**
   @namespace breakout
   The breakout game
@@ -37,6 +39,7 @@ class GameState {
   double _x_ball, _y_ball;
   double _vx_ball, _vy_ball;
   std::map<std::tuple<int, int>, Brick> _bricks;
+  PhysicsEngine engine;
 public:
   GameState();
   void exit();
