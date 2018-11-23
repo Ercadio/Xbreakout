@@ -1,4 +1,4 @@
-CXX = @g++ -std=c++17
+CXX = @g++-8 -std=c++17
 CXXFLAGS = -Wall -MMD -O -g
 CXXLIBS = -lX11 -lpng -lXrender
 SOURCES = $(shell find * -type f \( -name "*.cpp" -not -name "*.test.cpp" \) )

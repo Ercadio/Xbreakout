@@ -22,7 +22,7 @@ class Matrix {
 public:
   
   
-  T* _data[(... * shape)];
+  T* _data[(shape * ...)];
 
   //template <class V, class U, int...dim>
   //friend Matrix<V, ...dim> operator*(U& scalar, Matrix<V, ...dim>& m);

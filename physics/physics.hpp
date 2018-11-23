@@ -4,3 +4,9 @@
 #include "Geometry.hpp"
 #include "Matrix.hpp"
 #include "QuadTree.hpp"
+
+/**
+ *  @namespace physics
+ *  A collection of data structures and control flow logic
+ *  for game physic processing
+ */
