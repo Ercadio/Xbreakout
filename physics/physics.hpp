@@ -4,6 +4,7 @@
 #include "Geometry.hpp"
 #include "Matrix.hpp"
 #include "QuadTree.hpp"
+#include "RigidBody.hpp"
 
 /**
  *  @namespace physics
