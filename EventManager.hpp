@@ -7,7 +7,7 @@
 namespace breakout {
 
 /**
-  @class EventManger
+  @class EventManager
   The manager of events
 */
 class EventManager {

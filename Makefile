@@ -1,6 +1,6 @@
-CXX = @g++ -std=c++17
-CXXFLAGS = -Wall -MMD -O -g
-CXXLIBS = -lX11 -lpng -lXrender
+CXX = @gcc -std=c++17
+CXXFLAGS = -fdiagnostics-color=always -O -g
+CXXLIBS = -lX11 -lpng -lXrender -lstdc++
 SOURCES = $(shell find * -type f \( -name "*.cpp" -not -name "*.test.cpp" \) )
 TEST_SOURCES = $(shell find * -type f -name "*.cpp" -not -name "main.cpp")
 EXEC=breakout
@@ -14,7 +14,7 @@ DEPENDS = ${OBJECTS:.o=.d}
 TEST_DEPENDS = ${TEST_OBJECTS:.o=.d}
 
 $(EXEC): $(DEPENDS) $(OBJECTS) $(TEST_EXEC)
-	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXEC) $(CXXLIBS)
+	$(CXX) $(CXXFLAGS) -Wall $(OBJECTS) -o $(EXEC) $(CXXLIBS)
 	@./$(EXEC)
 
 ifeq ($(MAKECMDGOALS),$(EXEC))
@@ -37,12 +37,12 @@ $(OBJDIR):
 	@echo "Creating object directory"
 	@mkdir $(OBJDIR)
 	@echo "Creating directory structure"
-	@find . -type d ! -name $(OBJDIR) -exec mkdir -p -- $(OBJDIR)/{} \;
+	@find . -type d ! -name $(OBJDIR) ! -name doc -exec mkdir -p -- $(OBJDIR)/{} \;
 
-# Create object files from cc files
+# Create object files from cpp files
 $(OBJDIR)/%.o: %.cpp | $(OBJDIR)
 	@echo "Creating object file "$@
-	$(CXX) -c $< -o $@ $(CXXFLAGS)
+	$(CXX) -c $< -o $@ $(CXXFLAGS) -Wno-everything
 
 $(OBJDIR)/%.d: %.cpp | $(OBJDIR)
 	@echo "Creating dependency file "$@

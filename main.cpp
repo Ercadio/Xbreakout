@@ -56,10 +56,6 @@ int main(int argc, char* argv[]) {
   values.cap_style = CapButt;
   values.join_style = JoinBevel;
   GC gc = XCreateGC(display, window->drawable(), GCCapStyle | GCJoinStyle, &values);
-  if(gc < 0) {
-    std::cout << "[FATAL] Unable to create Graphical context\n";
-    std::exit(1);
-  }
 
   window->map();
   XSync(display, window->id());
