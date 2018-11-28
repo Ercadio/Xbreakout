@@ -3,6 +3,8 @@
 #include <stdexcept>
 #include <ostream>
 #include <vector>
+#include <functional>
+#include <type_traits>
 
 /**
  *  @class Matrix
@@ -10,63 +12,249 @@
  *  @tparam T the numerical type
  *  @tparam ...shape the shape of the Matrix
  *  @todo Actually store data
- *  @todo Reimplement operator<<
- *  @todo Implement operator[] accessor
- *  @todo Implement + * / - operators for scalars
- *  @todo Implement + * / - operators between matrices
  *  @todo Implement .sum()
- *  @todo Implement .dot(const Matrix&) const
- *  @todo Implement > < >= <= MatrixSelectors
+ *  @todo Implement .transpose()
  */
 template <class T = double, int... shape>
 class Matrix;
 
 /**
- *  @struct MatrixSelector
- *  A structure that holds information about a query to a Matrix
- *  @todo Design something better
- *  @todo Create tests and use cases about selectors
+ *  Prints the Matrix
+ *  @tparam T the type of the Matrix
+ *  @tparam ...shape the shape of the Matrix
+ *  @param os the output stream
+ *  @param m the Matrix
+ *  @todo Reimplement better
  */
-template <int... shape>
-struct MatrixSelector { };
-
-template <int... shape>
-MatrixSelector<shape...> operator"" _sel(const char* str);
-
-template <class T, int... shape>
+template<class T, int... shape>
 std::ostream& operator<<(std::ostream& os, const Matrix<T, shape...>& m);
-template <class V, class U, int...dim>
-Matrix<V, dim...> operator*(U scalar, Matrix<V, dim...> m);
-template <class T1, int... dim1, class T2, int... dim2>
-Matrix<T2, dim2...> operator*(Matrix<T1, dim1...> v1, Matrix<T2, dim2...> v2);
-template <class V, class U, int...dim>
-Matrix<V, dim...> operator/(Matrix<V, dim...> m, U scalar);
-template <class T1, int... dim, class T2>
-Matrix<T2, dim...> operator/(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
-template <class V, class U, int...dim>
-Matrix<V, dim...> operator+(U scalar, Matrix<V, dim...> m);
-template <class T1, int... dim, class T2>
-Matrix<T2, dim...> operator+(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
-template <class V, class U, int...dim>
-Matrix<V, dim...> operator-(Matrix<V, dim...> m, U scalar);
-template <class T1, int... dim, class T2>
-Matrix<T1, dim...> operator-(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
-Matrix<T, shape...> operator[](MatrixSelector<shape...>)
 
 /**
- *  The primary template
+ *  Returns true if two Matrix are equal
+ *  @tparam T the type of the two Matrix
+ *  @tparam ...shape the shape of the two Matrix
+ *  @param m1 the first Matrix
+ *  @param m2 the second Matrix
+ *  @todo implement
  */
-template <class T, int... shape>
-class Matrix {
+template<class T, int... shape>
+bool operator==(const Matrix<T, shape...>& m1, const Matrix<T, shape...> m2);
 
-  T _data[(shape * ...)];
+/**
+ *  Returns true if two Matrix are not equal
+ *  @tparam T the type of the two Matrix
+ *  @tparam ...shape the shape of the two Matrix
+ *  @param m1 the first Matrix
+ *  @param m2 the second Matrix
+ *  @todo implement
+ */
+template<class T, int... shape>
+bool operator!=(const Matrix<T, shape...>& m1, const Matrix<T, shape...> m2);
+
+/**
+ *  Returns a Matrix of booleans: true if the Matrix is smaller or equal than the other Matrix
+ *  @tparam T the type of the two Matrix
+ *  @tparam ...shape the shape of the two Matrix
+ *  @param m1 the first Matrix
+ *  @param m2 the second Matrix
+ *  @todo change return type
+ *  @todo implement
+ */
+template<class T, int... shape>
+bool operator<=(const Matrix<T, shape...>& m1, const Matrix<T, shape...> m2);
+
+/**
+ *  Returns a Matrix of booleans: true if the Matrix is greater or equal than the other Matrix
+ *  @tparam T the type of the two Matrix
+ *  @tparam ...shape the shape of the two Matrix
+ *  @param m1 the first Matrix
+ *  @param m2 the second Matrix
+ *  @todo change return type
+ *  @todo implement
+ */
+template<class T, int... shape>
+bool operator>=(const Matrix<T, shape...>& m1, const Matrix<T, shape...> m2);
+
+/**
+ *  Returns a Matrix of booleans: true if the Matrix is smaller than the other Matrix
+ *  @tparam T the type of the two Matrix
+ *  @tparam ...shape the shape of the two Matrix
+ *  @param m1 the first Matrix
+ *  @param m2 the second Matrix
+ *  @todo change return type
+ *  @todo implement
+ */
+template<class T, int... shape>
+bool operator<(const Matrix<T, shape...>& m1, const Matrix<T, shape...> m2);
+
+/**
+ *  Returns a Matrix of booleans: true if the Matrix is greater than the other Matrix
+ *  @tparam T the type of the two Matrix
+ *  @tparam ...shape the shape of the two Matrix
+ *  @param m1 the first Matrix
+ *  @param m2 the second Matrix
+ *  @todo change return type
+ *  @todo implement
+ */
+template<class T, int... shape>
+bool operator>(const Matrix<T, shape...>& m1, const Matrix<T, shape...> m2);
+
+/**
+ *  Returns a Matrix where each index is scaled
+ *  @tparam U the type of the scalar
+ *  @tparam V the type of the Matrix
+ *  @tparam ...dim the shape of the Matrix
+ *  @param scalar the scalar
+ *  @param m the Matrix
+ *  @todo implement
+ */
+template <class V, class U, int...dim>
+Matrix<typename std::invoke_result_t<std::multiplies<>, U, V>, dim...>
+operator*(U scalar, Matrix<V, dim...> m);
+
+/**
+ *  Returns a Matrix where each index is scaled
+ *  @tparam U the type of the scalar
+ *  @tparam V the type of the Matrix
+ *  @tparam ...dim the shape of the Matrix
+ *  @param scalar the scalar
+ *  @param m the Matrix
+ *  @todo implement
+ */
+template <class V, class U, int...dim>
+Matrix<typename std::invoke_result_t<std::multiplies<>, V, U>, dim...>
+operator*(Matrix<V, dim...> m, U scalar);
+
+/**
+ *  Returns a Matrix equal to the Matrix product of the two Matrix
+ *  @tparam T1 the type of the first Matrix
+ *  @tparam T2 the type of the second Matrix
+ *  @tparam ...dim1 the shape of the first Matrix
+ *  @tparam ...dim2 the shape of the second Matrix
+ *  @param m1 the first Matrix
+ *  @param m2 the second Matrix
+ *  @pre the second dimensions must be the same or both do not exist (Matrix::outer logic see Matrix 's todo)
+ *  @todo implement
+ *  @todo move this logic to a method Matrix::outer instead and change this to the index-wise product of 
+ *        two similarly-shaped Matrix (change templates)
+ *  @todo change all the tests and code that use Matrix::operator* to Matrix::outer
+ *  @todo specialize for three cases (Matrix::outer logic see Matrix 's todo):
+ *    - The two Matrix have no dimensions (and are dynamically sized)
+ *    - The two Matrix have a single dimension
+ *    - The two Matrix have at least two dimensions
+ */
+template <class T1, int... dim1, class T2, int... dim2>
+Matrix<typename std::invoke_result_t<std::multiplies<>, T1, T2>, dim2...>
+operator*(Matrix<T1, dim1...> v1, Matrix<T2, dim2...> v2);
+
+/**
+ *  Returns a Matrix where each index is divided
+ *  @tparam U the type of the scalar
+ *  @tparam V the type of the Matrix
+ *  @tparam ...dim the shape of the Matrix
+ *  @param scalar the scalar
+ *  @param m the Matrix
+ *  @todo implement
+ */
+template <class V, class U, int...dim>
+Matrix<typename std::invoke_result_t<std::divides<>, V, U>, dim...>
+operator/(Matrix<V, dim...> m, U scalar);
+
+/**
+ *  Returns the index-wise division of two Matrix
+ *  @tparam T1 the type of the first Matrix
+ *  @tparam T2 the type of the second Matrix
+ *  @tparam ...dim the shape of the two Matrix
+ *  @param m1 the first Matrix
+ *  @param m2 the second Matrix
+ *  @todo implement
+ */
+template <class T1, int... dim, class T2>
+Matrix<typename std::invoke_result_t<std::divides<>, T1, T2>, dim...>
+operator/(Matrix<T1, dim...> m1, Matrix<T2, dim...> m2);
+
+/**
+ *  Returns an offseted Matrix
+ *  @tparam V the type of the Matrix
+ *  @tparam U the type of the offset
+ *  @param offset the offset
+ *  @param m the Matrix
+ *  @todo implement
+ */
+template <class V, class U, int...dim>
+Matrix<typename std::invoke_result_t<std::plus<>, U, V>, dim...>
+operator+(U scalar, Matrix<V, dim...> m);
+
+/**
+ *  Returns an offseted Matrix
+ *  @tparam V the type of the Matrix
+ *  @tparam U the type of the offset
+ *  @param offset the offset
+ *  @param m the Matrix
+ *  @todo implement
+ */
+template <class V, class U, int...dim>
+Matrix<typename std::invoke_result_t<std::plus<>, U, V>, dim...>
+operator+(Matrix<V, dim...> m, U scalar);
+
+/**
+ *  Returns the index-wise addition of two Matrix
+ *  @tparam T1 the type of the first Matrix
+ *  @tparam T2 the type of the second Matrix
+ *  @tparam ...dim the shape of the two Matrix
+ *  @param m1 the first Matrix
+ *  @param m2 the second Matrix
+ *  @todo implement
+ */
+template <class T1, int... dim, class T2>
+Matrix<typename std::invoke_result_t<std::plus<>, T1, T2>, dim...>
+operator+(Matrix<T1, dim...> m1, Matrix<T2, dim...> m2);
+
+/**
+ *  Returns an offseted Matrix
+ *  @tparam V the type of the Matrix
+ *  @tparam U the type of the offset
+ *  @param offset the offset
+ *  @param m the Matrix
+ *  @todo implement
+ */
+template <class V, class U, int...dim>
+Matrix<typename std::invoke_result_t<std::minus<>, V, U>, dim...>
+operator-(Matrix<V, dim...> m, U scalar);
+
+/**
+ *  Returns the index-wise subtraction of two Matrix
+ *  @tparam T1 the type of the first Matrix
+ *  @tparam T2 the type of the second Matrix
+ *  @tparam ...dim the shape of the two Matrix
+ *  @param m1 the first Matrix
+ *  @param m2 the second Matrix
+ *  @todo implement
+ */
+template <class T1, int... dim, class T2>
+Matrix<typename std::invoke_result_t<std::minus<>, T1, T2>, dim...>
+operator-(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
+
+/**
+ *  A dynamically-shaped Matrix
+ *  @todo change all these commented-out declarations correctly for the specialization
+ */
+template <class T>
+class Matrix<T> {
 
 public: 
-  
+
+/* (Vincent) See todo above  
+  Matrix();
+  template <class U>
+  Matrix(const Matrix<U, shape...>& m);
+
   friend std::ostream& operator<< <>(std::ostream& os, const Matrix<T, shape...>& m);
   
   template <class V, class U, int...dim>
   friend Matrix<V, dim...> operator*(U scalar, Matrix<V, dim...> m);
+  template <class V, class U, int...dim>
+  friend Matrix<V, dim...> operator*(Matrix<V, dim...> m, U scalar);
   template <class T1, int... dim1, class T2, int... dim2>
   friend Matrix<T2, dim2...> operator*(Matrix<T1, dim1...> v1, Matrix<T2, dim2...> v2);
 
@@ -77,6 +265,8 @@ public:
 
   template <class V, class U, int...dim>
   friend Matrix<V, dim...> operator+(U scalar, Matrix<V, dim...> m);
+  template <class V, class U, int...dim>
+  friend Matrix<V, dim...> operator+(Matrix<V, dim...> m, U scalar);
   template <class T1, int... dim, class T2>
   friend Matrix<T2, dim...> operator+(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
@@ -85,14 +275,22 @@ public:
   template <class T1, int... dim, class T2>
   friend Matrix<T1, dim...> operator-(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
+  friend bool operator== <>(const Matrix<T, shape...>& m1, const Matrix<T, shape...> m2);
+  friend bool operator!= <>(const Matrix<T, shape...>& m1, const Matrix<T, shape...> m2);
+  friend bool operator<= <>(const Matrix<T, shape...>& m1, const Matrix<T, shape...> m2);
+  friend bool operator>= <>(const Matrix<T, shape...>& m1, const Matrix<T, shape...> m2);
+  friend bool operator< <>(const Matrix<T, shape...>& m1, const Matrix<T, shape...> m2);
+  friend bool operator> <>(const Matrix<T, shape...>& m1, const Matrix<T, shape...> m2);
+
   template <class U>
-  T dot(Matrix<U, shape...> m);
+  T dot(const Matrix<U, shape...>& m);
+
+  template <int... dim>
+  Matrix<T, dim...> operator[](const std::string& selector);
+
+  */
 };
 
-
-/**
- *  A partial specialization
- */
 template <class T, int first, int... rest>
 class Matrix<T, first, rest...> {
 
@@ -101,46 +299,77 @@ class Matrix<T, first, rest...> {
 public:
 
   using list_form = std::initializer_list<
-                    typename Matrix<T, rest...>::list_form
-               >;
+                      typename Matrix<T, rest...>::list_form
+                    >;
 
-
+  Matrix();
   Matrix(list_form data) {
     if (data.size() != first) {
       throw std::length_error("Received " + std::to_string(data.size()) + 
                               " element for a dimension of " + std::to_string(first));
     }
   }
+  template <class U>
+  Matrix(const Matrix<U, first, rest...>& m);
   
   friend std::ostream& operator<< <>(std::ostream& os, const Matrix<T, first, rest...>& m);
 
+  template <class U>
+  friend Matrix<typename std::invoke_result_t<std::multiplies<>, U, T>, first, rest...> 
+    operator* (U scalar, Matrix<T, first, rest...> m);
   template <class V, class U, int...dim>
-  friend Matrix<V, dim...> operator*(U scalar, Matrix<V, dim...> m);
+  friend Matrix<typename std::invoke_result_t<std::multiplies<>, V, U>, dim...> 
+    operator*(Matrix<V, dim...> m, U scalar);
   template <class T1, int... dim1, class T2, int... dim2>
-  friend Matrix<T2, dim2...> operator*(Matrix<T1, dim1...> v1, Matrix<T2, dim2...> v2);
+  friend Matrix<typename std::invoke_result_t<std::multiplies<>, T1, T2>, dim2...>
+    operator*(Matrix<T1, dim1...> v1, Matrix<T2, dim2...> v2);
 
   template <class V, class U, int...dim>
-  friend Matrix<V, dim...> operator/(Matrix<V, dim...> m, U scalar);
+  friend Matrix<typename std::invoke_result_t<std::divides<>, V, U>, dim...> 
+    operator/(Matrix<V, dim...> m, U scalar);
   template <class T1, int... dim, class T2>
-  friend Matrix<T2, dim...> operator/(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
+  friend Matrix<typename std::invoke_result_t<std::divides<>, T1, T2>, dim...>
+    operator/(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
   template <class V, class U, int...dim>
-  friend Matrix<V, dim...> operator+(U scalar, Matrix<V, dim...> m);
+  friend Matrix<typename std::invoke_result_t<std::plus<>, U, V>, dim...>
+    operator+(U scalar, Matrix<V, dim...> m);
+  template <class V, class U, int...dim>
+  friend Matrix<typename std::invoke_result_t<std::plus<>, V, U>, dim...>
+    operator+(Matrix<V, dim...> m, U scalar);
   template <class T1, int... dim, class T2>
-  friend Matrix<T2, dim...> operator+(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
+  friend Matrix<typename std::invoke_result_t<std::plus<>, T1, T2>, dim...>
+    operator+(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
   template <class V, class U, int...dim>
-  friend Matrix<V, dim...> operator-(Matrix<V, dim...> m, U scalar);
+  friend Matrix<typename std::invoke_result_t<std::minus<>, V, U>, dim...>
+    operator-(Matrix<V, dim...> m, U scalar);
   template <class T1, int... dim, class T2>
-  friend Matrix<T1, dim...> operator-(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
+  friend Matrix<typename std::invoke_result_t<std::minus<>, T1, T2>, dim...>
+    operator-(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
   template <class U>
-  T dot(Matrix<U, first, rest...> m);
+  typename std::invoke_result_t<std::plus<>, 
+    typename std::invoke_result_t<std::multiplies<>, T, U>,
+    typename std::invoke_result_t<std::multiplies<>, T, U>
+  > 
+    dot(const Matrix<U, first, rest...>& m);
+
+  friend bool operator== <> (const Matrix<T, first, rest...>& m1, const Matrix<T, first, rest...> m2);
+  friend bool operator!= <>(const Matrix<T, first, rest...>& m1, const Matrix<T, first, rest...> m2);
+  friend bool operator<= <>(const Matrix<T, first, rest...>& m1, const Matrix<T, first, rest...> m2);
+  friend bool operator>= <>(const Matrix<T, first, rest...>& m1, const Matrix<T, first, rest...> m2);
+  friend bool operator< <>(const Matrix<T, first, rest...>& m1, const Matrix<T, first, rest...> m2);
+  friend bool operator> <>(const Matrix<T, first, rest...>& m1, const Matrix<T, first, rest...> m2);
+
+  template <int... dim>
+  Matrix<T, dim...> operator[](const std::string& selector);
+
+  template <class Functor>
+  Matrix<typename std::invoke_result_t<Functor, T>, first, rest...> generate(Functor generator);
+
 };
 
-/**
- *  A partial specialization
- */
 template <class T, int first>
 class Matrix<T, first> {
 
@@ -150,47 +379,73 @@ public:
 
   using list_form = std::initializer_list<T>;
 
+  Matrix();
   Matrix(list_form data) {
     if (data.size() != first) {
       throw std::length_error("Received " + std::to_string(data.size()) + 
                               " element for a dimension of " + std::to_string(first));
     }
   }
+  template <class U>
+  Matrix(const Matrix<U, first>& m);
   
   friend std::ostream& operator<< <>(std::ostream& os, const Matrix<T, first>& m);
 
   template <class V, class U, int...dim>
-  friend Matrix<V, dim...> operator*(U scalar, Matrix<V, dim...> m);
+  friend Matrix<typename std::invoke_result_t<std::multiplies<>, U, V>, dim...>
+    operator*(U scalar, Matrix<V, dim...> m);
+  template <class V, class U, int...dim>
+  friend Matrix<typename std::invoke_result_t<std::multiplies<>, V, U>, dim...>
+    operator*(Matrix<V, dim...> m, U scalar);
   template <class T1, int... dim1, class T2, int... dim2>
-  friend Matrix<T2, dim2...> operator*(Matrix<T1, dim1...> v1, Matrix<T2, dim2...> v2);
+  friend Matrix<typename std::invoke_result_t<std::multiplies<>, T1, T2>, dim2...>
+    operator*(Matrix<T1, dim1...> v1, Matrix<T2, dim2...> v2);
 
   template <class V, class U, int...dim>
-  friend Matrix<V, dim...> operator/(Matrix<V, dim...> m, U scalar);
+  friend Matrix<typename std::invoke_result_t<std::divides<>, V, U>, dim...>
+    operator/(Matrix<V, dim...> m, U scalar);
   template <class T1, int... dim, class T2>
-  friend Matrix<T2, dim...> operator/(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
+  friend Matrix<typename std::invoke_result_t<std::divides<>, T1, T2>, dim...>
+    operator/(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
   template <class V, class U, int...dim>
-  friend Matrix<V, dim...> operator+(U scalar, Matrix<V, dim...> m);
+  friend Matrix<typename std::invoke_result_t<std::plus<>, U, V>, dim...>
+    operator+(U scalar, Matrix<V, dim...> m);
+  template <class V, class U, int...dim>
+  friend Matrix<typename std::invoke_result_t<std::plus<>, V, U>, dim...>
+    operator+(Matrix<V, dim...> m, U scalar);
   template <class T1, int... dim, class T2>
-  friend Matrix<T2, dim...> operator+(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
+  friend Matrix<typename std::invoke_result_t<std::plus<>, T1, T2>, dim...>
+    operator+(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
   template <class V, class U, int...dim>
-  friend Matrix<V, dim...> operator-(Matrix<V, dim...> m, U scalar);
+  friend Matrix<typename std::invoke_result_t<std::minus<>, V, U>, dim...>
+    operator-(Matrix<V, dim...> m, U scalar);
   template <class T1, int... dim, class T2>
-  friend Matrix<T1, dim...> operator-(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
+  friend Matrix<typename std::invoke_result_t<std::minus<>, T1, T2>, dim...>
+    operator-(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
   template <class U>
-  T dot(Matrix<U, first> m);
+  typename std::invoke_result_t<std::plus<>,
+    typename std::invoke_result_t<std::multiplies<>, T, U>,
+    typename std::invoke_result_t<std::multiplies<>, T, U>
+  >
+    dot(const Matrix<U, first>& m);
+
+  friend bool operator== <> (const Matrix<T, first>& m1, const Matrix<T, first> m2);
+  friend bool operator!= <>(const Matrix<T, first>& m1, const Matrix<T, first> m2);
+  friend bool operator<= <>(const Matrix<T, first>& m1, const Matrix<T, first> m2);
+  friend bool operator>= <>(const Matrix<T, first>& m1, const Matrix<T, first> m2);
+  friend bool operator< <>(const Matrix<T, first>& m1, const Matrix<T, first> m2);
+  friend bool operator> <>(const Matrix<T, first>& m1, const Matrix<T, first> m2);
+
+  template <int... dim>
+  Matrix<T, dim...> operator[](const std::string& selector);
+
+  template <class Functor>
+  Matrix<typename std::invoke_result_t<Functor, T>, first> generate(Functor generator);
 };
 
 typedef Matrix<double, 2> Vector;
 
-template <class T, int... shape>
-std::ostream& operator<<(std::ostream& os, const Matrix<T, shape...>& m) {
-  os << "Matrix " << &m << " {\n";
-  for(const T* it = m._data; it != m._data + (shape * ...); ++it) {
-    os << *it << ", ";
-  }
-  os << "\b\b\b\b\n}" << std::endl;
-  return os;
-}
+#include "Matrix.ops.hpp"
