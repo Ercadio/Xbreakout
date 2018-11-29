@@ -1,37 +1,43 @@
-#include <iostream>
-#include <queue>
-#include <functional>
-#include <exception>
+#include "Test.test.hpp"
 
-using namespace std;
-
-queue<queue<function<bool()> > > suites;
+std::vector <test::Suite> test::MasterSuite {
+};
 
 int main() {
-  cout << "\n\e[48;5;206m[Breakout Tests]\e[0m\n"
-          "Suites:\t" << suites.size();
-  int failed, errors, total;
-  while(not suites.empty()) {
-    auto suite = suites.front();
-    suites.pop();
-    total += suite.size();
-    while(not suite.empty()) {
-      auto test = suite.front();
-      suite.pop();
+  test::MasterSuite.push_back(test::MatrixSuite);
+  std::cout << "\n\e[48;5;63m[Breakout Tests]\e[0m\n"
+          "Suites:\t" << test::MasterSuite.size() << std::endl;
+  int failed=0, errors=0, total=0;
+  for(auto suite : test::MasterSuite) { 
+    total += suite.tests.size();
+    std::cout << std::endl << "\e[48;5;26m[ Suite " 
+              << suite.name << " ]\e[0m" << std::endl;
+    for(auto test : suite.tests) {
       int result;
       try {
         result = test();
         failed += result;
-        if(result) {
-          cout << "Failed a test...\n";
-        }
-      } catch (exception& e) {
-        cout << e.what() << endl;
+      } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
         ++errors;
       }
     }
   }
 
-  cout << total << "Tests completed [" << errors << " errors, " << 
-    failed << " failures, " << (total - errors - failed) << " passed]\n";
+  std::cout << std::endl << total << " Tests completed [" << 
+    "\e[38;5;226m" << errors << " error, " << 
+    "\e[38;5;202m" << failed << " failure, " << 
+    "\e[38;5;84m" << (total - errors - failed) << " passed\e[0m]\n";
+  if(total > 0) {
+    int blocks = 50;
+    errors = errors * blocks / total;
+    failed = failed * blocks / total;
+    int passed = (blocks - errors - failed);
+    std::cout
+      << "\e[48;5;226m" << std::string(errors, ' ')
+      << "\e[48;5;202m" << std::string(failed, ' ')
+      << "\e[48;5;84m" << std::string(passed, ' ') 
+      << "\e[0m" << std::endl;
+  }
+  std::cout << std::endl;
 }
