@@ -19,6 +19,23 @@ template <class T = double, int... shape>
 class Matrix;
 
 /**
+ *  @struct is_Matrix
+ *  @tparam T the type
+ */
+template<class T>
+struct is_Matrix {
+  static constexpr bool value = false;
+};
+
+template <class T, int... shape>
+struct is_Matrix<Matrix<T, shape...> > {
+  static constexpr bool value = true;
+};
+
+template <class T>
+constexpr bool is_Matrix_v = is_Matrix<T>::value;
+
+/**
  *  Prints the Matrix
  *  @tparam T the type of the Matrix
  *  @tparam ...shape the shape of the Matrix
@@ -109,7 +126,10 @@ bool operator>(const Matrix<T, shape...>& m1, const Matrix<T, shape...> m2);
  *  @todo implement
  */
 template <class V, class U, int...dim>
-Matrix<typename std::invoke_result_t<std::multiplies<>, U, V>, dim...>
+std::enable_if_t<
+  not is_Matrix_v<U>,
+  Matrix<typename std::invoke_result_t<std::multiplies<>, U, V>, dim...>
+>
 operator*(U scalar, Matrix<V, dim...> m);
 
 /**
@@ -122,7 +142,10 @@ operator*(U scalar, Matrix<V, dim...> m);
  *  @todo implement
  */
 template <class V, class U, int...dim>
-Matrix<typename std::invoke_result_t<std::multiplies<>, V, U>, dim...>
+std::enable_if_t<
+  not is_Matrix_v<U>,
+  Matrix<typename std::invoke_result_t<std::multiplies<>, V, U>, dim...>
+>
 operator*(Matrix<V, dim...> m, U scalar);
 
 /**
@@ -155,9 +178,12 @@ operator*(Matrix<T1, dim1...> v1, Matrix<T2, dim2...> v2);
  *  @param scalar the scalar
  *  @param m the Matrix
  *  @todo implement
- */
+*/
 template <class V, class U, int...dim>
-Matrix<typename std::invoke_result_t<std::divides<>, V, U>, dim...>
+std::enable_if_t<
+  not is_Matrix_v<U>,
+  Matrix<typename std::invoke_result_t<std::divides<>, V, U>, dim...>
+>
 operator/(Matrix<V, dim...> m, U scalar);
 
 /**
@@ -182,7 +208,10 @@ operator/(Matrix<T1, dim...> m1, Matrix<T2, dim...> m2);
  *  @todo implement
  */
 template <class V, class U, int...dim>
-Matrix<typename std::invoke_result_t<std::plus<>, U, V>, dim...>
+std::enable_if_t<
+  not is_Matrix_v<U>,
+  Matrix<typename std::invoke_result_t<std::plus<>, U, V>, dim...>
+>
 operator+(U scalar, Matrix<V, dim...> m);
 
 /**
@@ -194,7 +223,10 @@ operator+(U scalar, Matrix<V, dim...> m);
  *  @todo implement
  */
 template <class V, class U, int...dim>
-Matrix<typename std::invoke_result_t<std::plus<>, U, V>, dim...>
+std::enable_if_t<
+  not is_Matrix_v<U>,
+  Matrix<typename std::invoke_result_t<std::plus<>, V, U>, dim...>
+>
 operator+(Matrix<V, dim...> m, U scalar);
 
 /**
@@ -219,7 +251,10 @@ operator+(Matrix<T1, dim...> m1, Matrix<T2, dim...> m2);
  *  @todo implement
  */
 template <class V, class U, int...dim>
-Matrix<typename std::invoke_result_t<std::minus<>, V, U>, dim...>
+std::enable_if_t<
+  not is_Matrix_v<U>,
+  Matrix<typename std::invoke_result_t<std::minus<>, V, U>, dim...>
+>
 operator-(Matrix<V, dim...> m, U scalar);
 
 /**
@@ -244,7 +279,8 @@ class Matrix<T> {
 
 public: 
 
-/* (Vincent) See todo above  
+/* (Vincent) See todo
+ * above  
   Matrix();
   template <class U>
   Matrix(const Matrix<U, shape...>& m);
@@ -315,45 +351,69 @@ public:
   friend std::ostream& operator<< <>(std::ostream& os, const Matrix<T, first, rest...>& m);
 
   template <class U>
-  friend Matrix<typename std::invoke_result_t<std::multiplies<>, U, T>, first, rest...> 
-    operator* (U scalar, Matrix<T, first, rest...> m);
+  friend std::enable_if_t<
+    not is_Matrix_v<U>,
+    Matrix<typename std::invoke_result_t<std::multiplies<>, U, T>, first, rest...> 
+  >
+  operator*(U scalar, Matrix<T, first, rest...> m);
+
   template <class V, class U, int...dim>
-  friend Matrix<typename std::invoke_result_t<std::multiplies<>, V, U>, dim...> 
-    operator*(Matrix<V, dim...> m, U scalar);
+  friend std::enable_if_t<
+    not is_Matrix_v<U>,
+    Matrix<typename std::invoke_result_t<std::multiplies<>, V, U>, dim...> 
+  >
+  operator*(Matrix<V, dim...> m, U scalar);
+
   template <class T1, int... dim1, class T2, int... dim2>
   friend Matrix<typename std::invoke_result_t<std::multiplies<>, T1, T2>, dim2...>
-    operator*(Matrix<T1, dim1...> v1, Matrix<T2, dim2...> v2);
+  operator*(Matrix<T1, dim1...> v1, Matrix<T2, dim2...> v2);
 
   template <class V, class U, int...dim>
-  friend Matrix<typename std::invoke_result_t<std::divides<>, V, U>, dim...> 
-    operator/(Matrix<V, dim...> m, U scalar);
+  friend std::enable_if_t<
+    not is_Matrix_v<U>,
+    Matrix<typename std::invoke_result_t<std::divides<>, V, U>, dim...> 
+  >
+  operator/(Matrix<V, dim...> m, U scalar);
+
   template <class T1, int... dim, class T2>
   friend Matrix<typename std::invoke_result_t<std::divides<>, T1, T2>, dim...>
-    operator/(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
+  operator/(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
   template <class V, class U, int...dim>
-  friend Matrix<typename std::invoke_result_t<std::plus<>, U, V>, dim...>
-    operator+(U scalar, Matrix<V, dim...> m);
+  friend std::enable_if_t<
+    not is_Matrix_v<U>,
+    Matrix<typename std::invoke_result_t<std::plus<>, U, V>, dim...>
+  >
+  operator+(U scalar, Matrix<V, dim...> m);
+
   template <class V, class U, int...dim>
-  friend Matrix<typename std::invoke_result_t<std::plus<>, V, U>, dim...>
-    operator+(Matrix<V, dim...> m, U scalar);
+  friend std::enable_if_t<
+    not is_Matrix_v<U>,
+    Matrix<typename std::invoke_result_t<std::plus<>, V, U>, dim...>
+  >
+  operator+(Matrix<V, dim...> m, U scalar);
+
   template <class T1, int... dim, class T2>
   friend Matrix<typename std::invoke_result_t<std::plus<>, T1, T2>, dim...>
-    operator+(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
+  operator+(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
   template <class V, class U, int...dim>
-  friend Matrix<typename std::invoke_result_t<std::minus<>, V, U>, dim...>
-    operator-(Matrix<V, dim...> m, U scalar);
+  friend std::enable_if_t<
+    not is_Matrix_v<U>,
+    Matrix<typename std::invoke_result_t<std::minus<>, V, U>, dim...>
+  >
+  operator-(Matrix<V, dim...> m, U scalar);
+
   template <class T1, int... dim, class T2>
   friend Matrix<typename std::invoke_result_t<std::minus<>, T1, T2>, dim...>
-    operator-(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
+  operator-(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
   template <class U>
   typename std::invoke_result_t<std::plus<>, 
     typename std::invoke_result_t<std::multiplies<>, T, U>,
     typename std::invoke_result_t<std::multiplies<>, T, U>
   > 
-    dot(const Matrix<U, first, rest...>& m);
+  dot(const Matrix<U, first, rest...>& m);
 
   friend bool operator== <> (const Matrix<T, first, rest...>& m1, const Matrix<T, first, rest...> m2);
   friend bool operator!= <>(const Matrix<T, first, rest...>& m1, const Matrix<T, first, rest...> m2);
@@ -367,6 +427,9 @@ public:
 
   template <class Functor>
   Matrix<typename std::invoke_result_t<Functor, T>, first, rest...> generate(Functor generator);
+
+  template <class U, int... dim>
+  friend class Matrix;
 
 };
 
@@ -392,38 +455,59 @@ public:
   friend std::ostream& operator<< <>(std::ostream& os, const Matrix<T, first>& m);
 
   template <class V, class U, int...dim>
-  friend Matrix<typename std::invoke_result_t<std::multiplies<>, U, V>, dim...>
-    operator*(U scalar, Matrix<V, dim...> m);
+  friend std::enable_if_t<
+    not is_Matrix_v<U>,
+    Matrix<typename std::invoke_result_t<std::multiplies<>, U, V>, dim...>
+  >
+  operator*(U scalar, Matrix<V, dim...> m);
+
   template <class V, class U, int...dim>
-  friend Matrix<typename std::invoke_result_t<std::multiplies<>, V, U>, dim...>
-    operator*(Matrix<V, dim...> m, U scalar);
+  friend std::enable_if_t<
+    not is_Matrix_v<U>,
+    Matrix<typename std::invoke_result_t<std::multiplies<>, V, U>, dim...>
+  >
+  operator*(Matrix<V, dim...> m, U scalar);
+
   template <class T1, int... dim1, class T2, int... dim2>
   friend Matrix<typename std::invoke_result_t<std::multiplies<>, T1, T2>, dim2...>
-    operator*(Matrix<T1, dim1...> v1, Matrix<T2, dim2...> v2);
+  operator*(Matrix<T1, dim1...> v1, Matrix<T2, dim2...> v2);
 
   template <class V, class U, int...dim>
-  friend Matrix<typename std::invoke_result_t<std::divides<>, V, U>, dim...>
-    operator/(Matrix<V, dim...> m, U scalar);
+  friend std::enable_if_t<
+    not is_Matrix_v<U>,
+    Matrix<typename std::invoke_result_t<std::divides<>, V, U>, dim...>
+  >
+  operator/(Matrix<V, dim...> m, U scalar);
+
   template <class T1, int... dim, class T2>
   friend Matrix<typename std::invoke_result_t<std::divides<>, T1, T2>, dim...>
-    operator/(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
+  operator/(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
   template <class V, class U, int...dim>
-  friend Matrix<typename std::invoke_result_t<std::plus<>, U, V>, dim...>
-    operator+(U scalar, Matrix<V, dim...> m);
+  friend std::enable_if_t<
+    not is_Matrix_v<U>,
+    Matrix<typename std::invoke_result_t<std::plus<>, U, V>, dim...>
+  >
+  operator+(U scalar, Matrix<V, dim...> m);
+
   template <class V, class U, int...dim>
   friend Matrix<typename std::invoke_result_t<std::plus<>, V, U>, dim...>
-    operator+(Matrix<V, dim...> m, U scalar);
+  operator+(Matrix<V, dim...> m, U scalar);
+
   template <class T1, int... dim, class T2>
   friend Matrix<typename std::invoke_result_t<std::plus<>, T1, T2>, dim...>
-    operator+(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
+  operator+(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
   template <class V, class U, int...dim>
-  friend Matrix<typename std::invoke_result_t<std::minus<>, V, U>, dim...>
-    operator-(Matrix<V, dim...> m, U scalar);
+  friend std::enable_if_t<
+    not is_Matrix_v<U>,
+    Matrix<typename std::invoke_result_t<std::minus<>, V, U>, dim...>
+  >
+  operator-(Matrix<V, dim...> m, U scalar);
+
   template <class T1, int... dim, class T2>
   friend Matrix<typename std::invoke_result_t<std::minus<>, T1, T2>, dim...>
-    operator-(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
+  operator-(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
   template <class U>
   typename std::invoke_result_t<std::plus<>,
@@ -438,6 +522,9 @@ public:
   friend bool operator>= <>(const Matrix<T, first>& m1, const Matrix<T, first> m2);
   friend bool operator< <>(const Matrix<T, first>& m1, const Matrix<T, first> m2);
   friend bool operator> <>(const Matrix<T, first>& m1, const Matrix<T, first> m2);
+
+  template <class U, int... dim>
+  friend class Matrix;
 
   template <int... dim>
   Matrix<T, dim...> operator[](const std::string& selector);

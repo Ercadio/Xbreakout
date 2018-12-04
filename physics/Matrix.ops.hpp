@@ -25,15 +25,21 @@ std::ostream& operator<<(std::ostream& os, const Matrix<T, shape...>& m) {
 }
 
 template <class V, class U, int...dim>
-Matrix<typename std::invoke_result_t<std::multiplies<>, U, V>, dim...>
+std::enable_if_t<
+  not is_Matrix_v<U>,
+  Matrix<typename std::invoke_result_t<std::multiplies<>, U, V>, dim...>
+>
 operator*(U scalar, Matrix<V, dim...> m) {
-  return m.template generate([&scalar](const V& v) -> V { return scalar * v; });
+  return m.template generate([&scalar](const V& v) { return scalar * v; });
 }
 
 template <class V, class U, int...dim>
-Matrix<typename std::invoke_result_t<std::multiplies<>, V, U>, dim...>
+std::enable_if_t<
+  not is_Matrix_v<U>,
+  Matrix<typename std::invoke_result_t<std::multiplies<>, V, U>, dim...>
+>
 operator*(Matrix<V, dim...> m, U scalar) {
-  return m.template generate([&scalar](const V& v) -> V { return v * scalar; });
+  return m.template generate([&scalar](const V& v) { return v * scalar; });
 }
 
 template <class T1, int... dim1, class T2, int... dim2>
@@ -43,9 +49,12 @@ operator*(Matrix<T1, dim1...> v1, Matrix<T2, dim2...> v2) {
 }
 
 template <class V, class U, int...dim>
-Matrix<typename std::invoke_result_t<std::divides<>, V, U>, dim...>
+std::enable_if_t<
+  not is_Matrix_v<U>,
+  Matrix<typename std::invoke_result_t<std::divides<>, V, U>, dim...>
+>
 operator/(Matrix<V, dim...> m, U scalar) {
-  return m.template generate([&scalar](const V& v) -> V { return v / scalar; });
+  return m.template generate([&scalar](const V& v) { return v / scalar; });
 }
 
 template <class T1, int... dim, class T2>
@@ -55,15 +64,21 @@ operator/(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2) {
 }
 
 template <class V, class U, int...dim>
-Matrix<typename std::invoke_result_t<std::plus<>, U, V>, dim...>
+std::enable_if_t<
+  not is_Matrix_v<U>,
+  Matrix<typename std::invoke_result_t<std::plus<>, U, V>, dim...>
+>
 operator+(U scalar, Matrix<V, dim...> m) {
-  return m.template generate([&scalar](const V& v) -> V { return scalar + v; });
+  return m.template generate([&scalar](const V& v) { return scalar + v; });
 }
 
 template <class V, class U, int...dim>
-Matrix<typename std::invoke_result_t<std::plus<>, V, U>, dim...>
+std::enable_if_t<
+  not is_Matrix_v<U>,
+  Matrix<typename std::invoke_result_t<std::plus<>, V, U>, dim...>
+>
 operator+(Matrix<V, dim...> m, U scalar) {
-  return m.template generate([&scalar](const V& v) -> V { return v + scalar; });
+  return m.template generate([&scalar](const V& v) { return v + scalar; });
 }
 
 template <class T1, int... dim, class T2>
@@ -73,9 +88,12 @@ operator+(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2) {
 }
 
 template <class V, class U, int...dim>
-Matrix<typename std::invoke_result_t<std::minus<>, V, U>, dim...>
+std::enable_if_t<
+  not is_Matrix_v<U>,
+  Matrix<typename std::invoke_result_t<std::minus<>, V, U>, dim...>
+>
 operator-(Matrix<V, dim...> m, U scalar) {
-  return m.template generate([&scalar](const V& v) -> V { return v - scalar; });
+  return m.template generate([&scalar](const V& v) { return v - scalar; });
 }
 
 template <class T1, int... dim, class T2>
