@@ -3,6 +3,7 @@
 #include <thread>
 #include <chrono>
 #include "view/view.hpp"
+#include "logging.hpp"
 
 #define ALPHA 0.2f
 
@@ -17,34 +18,38 @@ int main(int argc, char* argv[]) {
   // This does not overwrite the env var
   setenv("DISPLAY", ":0", 0);
 
-  std::cout << "[INFO] Using X Server at " << std::getenv("DISPLAY") << std::endl;
+  std::cout << infomsg << "Using X Server at " << std::getenv("DISPLAY") << std::endl;
 
   Display* display = XOpenDisplay(nullptr);
+  if(display == nullptr) {
+    std::cerr << errormsg << "Failed to create display" << std::endl;
+  }
   breakout::MainWindow* window = new breakout::MainWindow(display);
   breakout::EventManager* eventManager = new breakout::EventManager(display, [](const XEvent& event){
     switch(event.type) {
       case Expose:
-        std::cout << "[INFO] Received Expose event" << std::endl;
+        std::cout << infomsg << "Received Expose event" << std::endl;
         break;
       case KeyPress:
-        std::cout << "[INFO] Pressed key " << event.xkey.state << " aka " << event.xkey.keycode << std::endl;
+        std::cout << infomsg << "Pressed key " << event.xkey.state 
+                  << " aka " << event.xkey.keycode << std::endl;
         if(event.xkey.keycode == 65)
           breakout::game.use_power();
         if(event.xkey.keycode == 9) {
-          std::cout << "[INFO] Quitting the application" << std::endl;
+          std::cout << infomsg << "Quitting the application" << std::endl;
           breakout::game.exit();
         }
         break;
       case MotionNotify:
-        std::cout << "[INFO] Moved cursor" << std::endl;
+        std::cout << infomsg << "Moved cursor" << std::endl;
         break;
       case DestroyNotify:
       case ClientMessage:
-        std::cout << "[INFO] Quitting the application" << std::endl;
+        std::cout << infomsg << "Quitting the application" << std::endl;
         breakout::game.exit();
         break;
       default:
-        std::cerr << "[WARNING] Encountered unknown event" << std::endl;
+        std::cerr << warningmsg << "Encountered unknown event" << std::endl;
         break;
     }
   });
@@ -64,7 +69,7 @@ int main(int argc, char* argv[]) {
   esc.display(display, window, gc, window->width() / 2, window->height() * 0.6f);
   XSync(display, window->id());
 
-  std::cout << "[INFO] Game has started" << std::endl;
+  std::cout << infomsg << "Game has started" << std::endl;
   double fps = 0;
   while(breakout::game.is_running()) {
     auto now = std::chrono::system_clock::now();
