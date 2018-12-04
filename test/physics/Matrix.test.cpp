@@ -50,12 +50,13 @@ bool arith() {
     result = true;
   }
   auto m3 = m2 * 1i; // Should be complex
+  Matrix<std::complex<double>, 2, 2> c_expected = {{{1.i},{1.i}},{{1.i},{1.i}}};
   if(typeid(m3) != typeid(Matrix<std::complex<double>, 2, 2>)) {
     std::cerr << failmsg << "m3 should have been of type " << type_str<Matrix<std::complex<double>, 2, 2> >::value()
               << " but was of type " << type_str<decltype(m3)>::value() << std::endl;
     result = true;
   }
-  if(m3 != m1 or not (m3 == m1)) {
+  if(m3 != c_expected or not (m3 == c_expected)) {
     std::cerr << failmsg << "m3 should have been equal to m1" << std::endl;
     std::cerr << "m3: " << m3;
     std::cerr << "m1: " << m1;
@@ -79,9 +80,9 @@ bool arith() {
     std::cerr << "expected: " << expected << std::endl;
     result = true;
   }
-  if(m4 / 0.5f != expected or not(m4 / 0.5f == expected)) {
+  if(Matrix<int, 2, 2>(m4 / 0.5f) != expected or not(Matrix<int, 2, 2>(m4 / 0.5f) == expected)) {
     std::cerr << failmsg << "m4 was not divided properly by 1/2" << std::endl;
-    std::cerr << "m4 / 0.5f: " << (m4 / 0.5f) << std::endl;
+    std::cerr << "Matrix<int, 2, 2>(m4 / 0.5f): " << Matrix<int, 2, 2>(m4 / 0.5f) << std::endl;
     std::cerr << "expected: " << expected << std::endl;
     result = true;
   }
