@@ -1,5 +1,5 @@
 #include "breakout.hpp"
-
+#include "logging.hpp"
 
 namespace breakout {
 
@@ -11,7 +11,7 @@ void GameState::exit() {
 
 bool GameState::is_running() const { return _is_running; }
 
-void GameState::use_power() { std::cout << "[INFO] Used a power!" << std::endl; }
+void GameState::use_power() { infomsg << "Used a power!" << std::endl; }
 
 void GameState::display() { }
 

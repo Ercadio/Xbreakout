@@ -1,4 +1,5 @@
 #include "breakout.hpp"
+#include "logging.hpp"
 
 namespace breakout {
 
@@ -26,14 +27,14 @@ _hint(new XSizeHints{
 })
 {
   if (_display == nullptr) {
-    std::cerr << "[FATAL] Unable to open display" << std::endl;
+    errormsg << "Unable to open display" << std::endl;
     throw DisplayException("Unable to open display");
   }
   int event, error;
   if (XRenderQueryExtension(_display, &event, &error)) {
-    std::cout << "[INFO] XRender is supported for display" << std::endl;
+    infomsg << "XRender is supported for display" << std::endl;
   } else {
-    std::cerr << "[WARNING] XRender is not supported by display... Moving on" << std::endl;
+    warningmsg << "XRender is not supported by display... Moving on" << std::endl;
   }
   XSetNormalHints(_display, _wind, _hint);
   set_title(name);
@@ -45,7 +46,7 @@ void MainWindow::set_title(const std::string& name) {
 }
 
 void MainWindow::map() {
-  std::cout << "[INFO] Mapped window " << _screen_id << std::endl;
+  infomsg << "Mapped window " << _screen_id << std::endl;
   XMapWindow(_display, _wind);
   XSync(_display, _wind);
 }

@@ -1,5 +1,5 @@
 CXX = @gcc -std=c++17
-CXXFLAGS = -fdiagnostics-color=always -O -g
+CXXFLAGS = -fdiagnostics-color=always -DLOG_DEBUG=true -O -g
 CXXLIBS = -lX11 -lpng -lXrender -lstdc++
 SOURCES = $(shell find * -type f \( -name "*.cpp" -not -name "*.test.cpp" \) )
 TEST_SOURCES = $(shell find * -type f -name "*.cpp" -not -name "main.cpp")

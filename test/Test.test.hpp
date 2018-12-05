@@ -8,7 +8,7 @@
 
 #include "../breakout.hpp"
 
-#define failmsg std::string("\e[38;5;202m") + "[FAIL][" + __FILE__ + ':' + std::to_string(__LINE__) + "]\e[0m "
+#define failmsg std::cout << "\e[38;5;202m" << "[FAIL][" << __FILE__ << ':' << std::to_string(__LINE__) << "]\e[0m "
 
 namespace test {
 

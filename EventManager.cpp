@@ -1,4 +1,5 @@
 #include "EventManager.hpp"
+#include "logging.hpp"
 
 namespace breakout {
 
@@ -18,20 +19,20 @@ void EventManager::registerDefaults(MainWindow* window) {
 }
 
 void EventManager::skipUntil(long mask) {
-  std::cout << "[INFO] Skipping all upcoming events until " << mask << std::endl;
+  infomsg << "Skipping all upcoming events until " << mask << std::endl;
   XEvent e;
   do {
     XNextEvent(_display, &e);
-    std::cout << "[INFO] Skipped event " << e.type << std::endl;
+    debugmsg << "Skipped event " << e.type << std::endl;
   } while(not (e.type | mask));
-  std::cout << "[INFO] Received event " << e.type << " so we stop skipping" << std::endl;
+  debugmsg << "Received event " << e.type << " so we stop skipping" << std::endl;
 }
 
 void EventManager::handleNext() {
-  std::cout << "[INFO] Listening to event" << std::endl;
+  debugmsg << "Listening to event" << std::endl;
   XEvent e;
   XNextEvent(_display, &e);
-  std::cout << "[INFO] Handled event " << e.type << std::endl;
+  debugmsg << "Handled event " << e.type << std::endl;
   _handle(e);
 } 
 

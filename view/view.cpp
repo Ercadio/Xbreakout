@@ -4,20 +4,20 @@
 #include <iostream>
 #include <string>
 #include "view.hpp"
-
+#include "../logging.hpp"
 
 namespace view {
 
 std::tuple<unsigned char**, int, int> getPNGPixels(const std::string& fn) {
   FILE* fp = fopen(fn.c_str(), "rb");
   if(not fp) {
-    std::cerr << "[ERROR] " << fn << " is not a file" << std::endl;
+    errormsg << fn << " is not a file" << std::endl;
     throw ImageException(fn + " is not a file");
   }
   png_byte signature[8];
   fread(signature, 1, 8, fp);
   if(png_sig_cmp(signature, 0, 8)) {
-    std::cout << "[ERROR] " << fn << " is not a png file" << std::endl;
+    errormsg << fn << " is not a png file" << std::endl;
     throw ImageException(fn + " is not a png file");
   }
   
@@ -26,14 +26,14 @@ std::tuple<unsigned char**, int, int> getPNGPixels(const std::string& fn) {
     PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr
   );
   if(not png_ptr) {
-    std::cout << "[ERROR] cannot create png object" << std::endl;
+    errormsg << "cannot create png object" << std::endl;
     throw ImageException("Cannot create png object");
   }
 
   // Create info_ptr
   png_infop info_ptr = png_create_info_struct(png_ptr);
   if(not info_ptr) {
-    std::cout << "[ERROR] cannot create png info object" << std::endl;
+    errormsg << "cannot create png info object" << std::endl;
     throw ImageException("Cannot create png info object");
   }
 
@@ -48,9 +48,9 @@ std::tuple<unsigned char**, int, int> getPNGPixels(const std::string& fn) {
   int passes = png_set_interlace_handling(png_ptr);
   png_read_update_info(png_ptr, info_ptr);
 
-  std::cout << "[INFO] Width of " << width << std::endl;
-  std::cout << "[INFO] Height of " << height << std::endl;
-  std::cout << "[INFO] Depth of " << static_cast<int>(bit_depth) << std::endl;
+  infomsg << "Width of " << width << std::endl;
+  infomsg << "Height of " << height << std::endl;
+  infomsg << "Depth of " << static_cast<int>(bit_depth) << std::endl;
 
   if (color_type == PNG_COLOR_TYPE_RGB or color_type == PNG_COLOR_TYPE_RGB_ALPHA)
     png_set_bgr(png_ptr);
@@ -61,7 +61,7 @@ std::tuple<unsigned char**, int, int> getPNGPixels(const std::string& fn) {
     row_pointers[i] = new png_byte[png_get_rowbytes(png_ptr, info_ptr)];
   }
  
-  std::cout << "[INFO]: rowbytes: " << static_cast<int>(png_get_rowbytes(png_ptr, info_ptr)) << std::endl;
+  infomsg << "rowbytes: " << static_cast<int>(png_get_rowbytes(png_ptr, info_ptr)) << std::endl;
  
   // Loading image
   png_read_image(png_ptr, row_pointers);
