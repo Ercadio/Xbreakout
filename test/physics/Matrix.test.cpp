@@ -76,7 +76,7 @@ bool arith() {
   if(m4 * 2 != expected or not(m4 * 2 != expected) or 2 * m4 != expected or not(2 * m4 == expected)) {
     failmsg << "m4 was not scaled properly by 2" << std::endl;
     std::cerr << "m4 * 2: " << (m4 * 2) << std::endl;
-    //std::cerr << "2 * m4: " << (2 * m4) << std::endl;
+    std::cerr << "2 * m4: " << (2 * m4) << std::endl;
     std::cerr << "expected: " << expected << std::endl;
     result = true;
   }

@@ -350,7 +350,7 @@ public:
   
   friend std::ostream& operator<< <>(std::ostream& os, const Matrix<T, first, rest...>& m);
 
-  template <class U>
+  template <class V, class U, int...dim>
   friend std::enable_if_t<
     not is_Matrix_v<U>,
     Matrix<typename std::invoke_result_t<std::multiplies<>, U, T>, first, rest...> 
