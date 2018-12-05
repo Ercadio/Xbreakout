@@ -31,7 +31,7 @@ void PNGImage::display(Display* display, breakout::MainWindow* window, GC& gc, i
     32, 0
   );
   infomsg << "Created image" << std::endl;
-  XPutImage(display, window->_wind, gc, ximg, 0, 0,
+  XPutImage(display, window->drawable(), gc, ximg, 0, 0,
     x - _width/2, y - _height/2,  _width, _height);
   infomsg << "Displayed image to " << window->drawable() << std::endl;
   

@@ -34,6 +34,9 @@ bool ctor() {
     std::cerr << "mint: " << mint << std::endl;
     result = true;
   }
+  Matrix<double, 1> minf = { std::numeric_limits<double>::infinity() };
+  std::cout << "minf: " << minf << std::endl
+            << "expected: " << "{ inf }" << std::endl;
   return result;
 }
 
@@ -57,9 +60,9 @@ bool arith() {
     result = true;
   }
   if(m3 != c_expected or not (m3 == c_expected)) {
-    failmsg << "m3 should have been equal to m1" << std::endl;
+    failmsg << "m3 should have been equal to c_expected" << std::endl;
     std::cerr << "m3: " << m3;
-    std::cerr << "m1: " << m1;
+    std::cerr << "c_expected: " << c_expected;
     result = true;
   }
 
