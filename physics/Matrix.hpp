@@ -271,6 +271,41 @@ Matrix<typename std::invoke_result_t<std::minus<>, T1, T2>, dim...>
 operator-(Matrix<T1, dim...> v1, Matrix<T2, dim...> v2);
 
 /**
+ *  Returns the logical AND of two Matrix
+ *  @tparam ...dim the shape of the two Matrix
+ *  @param m1 the first Matrix
+ *  @param m2 the second Matrix
+ */
+template <int... dim>
+Matrix<bool, dim...> operator and(const Matrix<bool, dim...>& m1, const Matrix<bool, dim...>& m2);
+
+/**
+ *  Returns the logical OR of two Matrix
+ *  @tparam ...dim the shape of the two Matrix
+ *  @param m1 the first Matrix
+ *  @param m2 the second Matrix
+ */
+template <int... dim>
+Matrix<bool, dim...> operator or(const Matrix<bool, dim...>& m1, const Matrix<bool, dim...>& m2);
+
+/**
+ *  Returns the logical NOT of a Matrix
+ *  @tparam ...dim the shape of the two Matrix
+ *  @param m the Matrix
+ */
+template <int... dim>
+Matrix<bool, dim...> operator not(const Matrix<bool, dim...>& m);
+
+/**
+ *  Returns the logical XOR of two Matrix
+ *  @tparam ...dim the shape of the two Matrix
+ *  @param m1 the first Matrix
+ *  @param m2 the second Matrix
+ */
+template<int... dim>
+Matrix<bool, dim...> operator xor(const Matrix<bool, dim...>& m1, const Matrix<bool, dim...>& m2);
+
+/**
  *  A dynamically-shaped Matrix
  *  @todo change all these commented-out declarations correctly for the specialization
  */
@@ -531,6 +566,122 @@ public:
 
   template <class Functor>
   Matrix<typename std::invoke_result_t<Functor, T>, first> generate(Functor generator);
+};
+
+template <int first, int... rest>
+class Matrix<bool, first, rest...> {
+
+  int _data[std::min(first * (rest * ...) / sizeof(int) / 8, 1)];
+
+public:
+
+  using list_form = std::initializer_list<
+                      typename Matrix<bool, rest...>::list_form
+                    >;
+
+  Matrix();
+  Matrix(list_form data) {
+    if (data.size() != first) {
+      throw std::length_error("Received " + std::to_string(data.size()) + 
+                              " element for a dimension of " + std::to_string(first));
+    }
+  }
+
+  /**
+   *  @todo add static requirements for bool conversion
+   */
+  template <class U>
+  Matrix(const Matrix<U, first, rest...>& m);
+  
+  friend std::ostream& operator<< <>(std::ostream& os, const Matrix<bool, first, rest...>& m);
+
+  template <int... dim>
+  Matrix<bool, dim...> operator[](const std::string& selector);
+
+  template <class Functor>
+  Matrix<typename std::invoke_result_t<Functor, bool>, first, rest...> generate(Functor generator);
+
+  template <class U, int... dim>
+  friend class Matrix;
+
+  bool allTrue() const;
+  bool allFalse() const;
+  bool someTrue() const;
+  bool someFalse() const;
+
+  template <int... dim>
+  friend Matrix<bool, dim...>
+  operator and(const Matrix<bool, dim...>& m1, const Matrix<bool, dim...>& m2);
+
+  template <int... dim>
+  friend Matrix<bool, dim...>
+  operator or(const Matrix<bool, dim...>& m1, const Matrix<bool, dim...>& m2);
+
+  template <int... dim>
+  friend Matrix<bool, dim...>
+  operator not(const Matrix<bool, dim...>& m);
+
+  template<int... dim>
+  friend Matrix<bool, dim...>
+  operator xor(const Matrix<bool, dim...>& m1, const Matrix<bool, dim...>& m2);
+
+};
+
+template <int first>
+class Matrix<bool, first> {
+
+  int _data[std::min(first / int(sizeof(int)) / 8, 1)];
+
+public:
+
+  using list_form = std::initializer_list<bool>;
+
+  Matrix();
+  Matrix(list_form data) {
+    if (data.size() != first) {
+      throw std::length_error("Received " + std::to_string(data.size()) + 
+                              " element for a dimension of " + std::to_string(first));
+    }
+  }
+
+  /**
+   *  @todo add static requirements for bool conversion
+   */
+  template <class U>
+  Matrix(const Matrix<U, first>& m);
+  
+  friend std::ostream& operator<< <>(std::ostream& os, const Matrix<bool, first>& m);
+
+  template <int dim>
+  Matrix<bool, dim> operator[](const std::string& selector);
+
+  template <class Functor>
+  Matrix<typename std::invoke_result_t<Functor, bool>, first> generate(Functor generator);
+
+  template <class U, int... dim>
+  friend class Matrix;
+
+  bool allTrue() const;
+  bool allFalse() const;
+  bool someTrue() const;
+  bool someFalse() const;
+
+  template <int... dim>
+  friend Matrix<bool, dim...>
+  operator and(const Matrix<bool, dim...>& m1, const Matrix<bool, dim...>& m2);
+
+  template <int... dim>
+  friend Matrix<bool, dim...>
+  operator or(const Matrix<bool, dim...>& m1, const Matrix<bool, dim...>& m2);
+
+  template <int... dim>
+  friend Matrix<bool, dim...>
+  operator not(const Matrix<bool, dim...>& m);
+
+  template<int... dim>
+  friend Matrix<bool, dim...>
+  operator xor(const Matrix<bool, dim...>& m1, const Matrix<bool, dim...>& m2);
+
 };
 
 typedef Matrix<double, 2> Vector;
