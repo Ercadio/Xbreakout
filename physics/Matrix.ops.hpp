@@ -132,6 +132,27 @@ bool operator> (const Matrix<T, shape...>& m1, const Matrix<T, shape...> m2) {
   return {}; //this->generate(std::greater).allTrue();
 }
 
+template <int... dim>
+Matrix<bool, dim...> operator and(const Matrix<bool, dim...>& m1, const Matrix<bool, dim...>& m2) {
+  return {};
+}
+
+template <int... dim>
+Matrix<bool, dim...> operator or(const Matrix<bool, dim...>& m1, const Matrix<bool, dim...>& m2) {
+  return {};
+}
+
+template <int... dim>
+Matrix<bool, dim...> operator not(const Matrix<bool, dim...>& m) {
+  return {};
+}
+
+template<int... dim>
+Matrix<bool, dim...> operator xor(const Matrix<bool, dim...>& m1, const Matrix<bool, dim...>& m2) {
+  return {};
+}
+
+
 template <class T, int first, int... shape>
 template <class U>
 typename std::invoke_result_t<std::plus<>, 
